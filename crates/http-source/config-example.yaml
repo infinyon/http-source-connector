@@ -1,0 +1,10 @@
+meta:
+  version: latest
+  name: my-http
+  type: http-source
+  topic: http-topic
+  create-topic: true
+http:
+  endpoint: "https://catfact.ninja/fact"
+  interval: 10s  
+

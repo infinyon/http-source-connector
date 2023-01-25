@@ -1,15 +1,12 @@
-[package]
-name = "http-source"
-version = "0.5.0"
-edition = "2021"
-publish = false
-license = "Apache 2.0"
-authors = ["Fluvio Contributors <team@fluvio.io>"]
-description = "A Fluvio connector that fetches data from HTTP endpoints"
-
-[dependencies]
-
+[workspace]
+members = [
+    "crates/http-source",
+    "crates/mock-http-server",
+    "crates/test-smartmodule-map",
+]
+resolver = "2"
 
 [profile.release-lto]
 inherits = "release"
 lto = true
+

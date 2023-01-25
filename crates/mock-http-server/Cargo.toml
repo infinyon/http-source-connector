@@ -1,0 +1,13 @@
+[package]
+name = "mock-http-server"
+version = "0.1.0"
+edition = "2021"
+publish = false
+license = "Apache 2.0"
+authors = ["Fluvio Contributors <team@fluvio.io>"]
+
+[dependencies]
+tide = { version = "0.16" }
+async-std = { version = "1.12",  default-features = false, features = ["attributes", "tokio1"]}
+serde = { version = "1.0", default-features = false, features = ["derive"]}
+
