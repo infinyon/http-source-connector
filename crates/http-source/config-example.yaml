@@ -1,8 +1,8 @@
 meta:
   version: latest
-  name: my-http
+  name: cat-facts
   type: http-source
-  topic: http-topic
+  topic: cat-facts
   create-topic: true
 http:
   endpoint: "https://catfact.ninja/fact"
