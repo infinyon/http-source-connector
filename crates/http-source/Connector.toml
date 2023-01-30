@@ -1,0 +1,58 @@
+[package]
+name = "http-source"
+group = "fluvio"
+version = "0.5.0"
+apiVersion = "0.5.0"
+fluvio = "0.10.0"
+description = "HTTP source connector"
+license = "Apache-2.0"
+
+[direction]
+source = true
+
+[deployment]
+binary = "http-source"
+
+[custom]
+name = "http"
+required = ["endpoint"]
+
+[custom.properties.endpoint]
+title = "Endpoint"
+description = "HTTP endpoint url"
+type = "string"
+
+[custom.properties.body]
+title = "Body"
+description = "HTTP request body"
+type = "string"
+
+[custom.properties.user_agent]
+title = "UserAgent"
+description = "HTTP request user-agent header"
+type = "string"
+
+[custom.properties.method]
+title = "HttpMethod"
+description = "HTTP request method (GET, POST, etc.)"
+type = "string"
+
+[custom.properties.interval]
+title = "Interval"
+description = "Interval of polling (1s, 10m, etc.)"
+type = "string"
+
+[custom.properties.headers]
+title = "HttpHeaders"
+description = "Headers to include in the HTTP request, in Key=Value format"
+type = "array"
+
+[custom.properties.output_parts]
+title = "OutputParts"
+description = "Response output parts: body | full"
+type = "string"
+
+[custom.properties.output_type]
+title = "OutputType"
+description = "Response output type: text | json"
+type = "string"

@@ -54,5 +54,79 @@ jobs:
         if: ${{ matrix.check == 'clippy' }}
         run: cargo clippy --all-targets -- -D warnings
 
-
+  integration_tests:
+    name: Integration testing on - ${{ matrix.os }} for ${{ matrix.connector-name }} connector.
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        rust: [stable]
+        connector-name:
+          - http-source
+    env:
+      RUST_BACKTRACE: full
+    steps:
+      - uses: actions/checkout@v3
+      - uses: AbsaOSS/k3d-action@v2.3.0
+        name: "Create fluvio k3d Cluster"
+        with:
+          cluster-name: "fluvio"
+          args: --timeout 5m
+      - name: Ensure k3d cluster is ready
+        run: |
+          sleep 5
+          ./actions/k3d-check.sh
+      - name: Install Fluvio Local Cluster
+        timeout-minutes: 10
+        uses: infinyon/fluvio@master
+        with:
+          cluster-type: k3d
+          version: latest
+      - name: Check Fluvio Installation
+        run: |
+          # TODO: When we're not using fluvio on the master branch, revert this.
+          fluvio cluster delete
+          fluvio cluster start --image-version latest
+          sleep 10
+          fluvio version
+          fluvio topic list
+          fluvio topic create foobar
+          sleep 3
+          echo foo | fluvio produce foobar
+          fluvio consume foobar -B -d
+      - name: Install Fluvio SMDK
+        run: fluvio install smdk
+      - uses: actions/checkout@v3
+      - name: Install Rust stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install Rust ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          target: wasm32-unknown-unknown
+      - name: Add wasm
+        run: rustup target add wasm32-unknown-unknown
+      - name: Setup BATS
+        uses: mig4/setup-bats@v1
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.rust-target }}-${{ matrix.connector-name }}
+      - name: Test
+        timeout-minutes: 20
+        run: make test
+      - name: Run diagnostics
+        if: ${{ !success() }}
+        timeout-minutes: 5
+        run: fluvio cluster diagnostics
+      - name: Upload diagnostics
+        uses: actions/upload-artifact@v3
+        timeout-minutes: 5
+        if: ${{ !success() }}
+        with:
+          name: integration_${{ matrix.connector-name }}
+          path: diagnostics*.gz
+          retention-days: 5
 

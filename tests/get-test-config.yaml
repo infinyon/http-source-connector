@@ -1,0 +1,11 @@
+meta:
+  version: latest
+  name: http-json-connector
+  type: http-source
+  topic: TOPIC
+  create_topic: false
+http:
+  endpoint: http://127.0.0.1:8080/get
+  method: GET
+  body: ""
+  interval: "1s"
