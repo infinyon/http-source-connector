@@ -24,5 +24,10 @@ tokio = { version = "1.23", default-features = false, features = ["time"]}
 fluvio = { git = "https://github.com/infinyon/fluvio", tag = "v0.10.4"}
 fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.10.4", features = ["derive"]}
 
+# workaround for building zstd for aarch64
+# https://github.com/gyscos/zstd-rs/issues/177
+[dependencies.zstd-sys]
+version = "2.0"
+
 [dev-dependencies]
 mockito = { version = "0.31", default-features = false}
