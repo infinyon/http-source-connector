@@ -22,7 +22,7 @@ tokio-stream = { version = "0.1", default-features = false, features = ["time"] 
 tokio = { version = "1.23", default-features = false, features = ["time"]}
 
 fluvio = { git = "https://github.com/infinyon/fluvio", tag = "v0.10.4"}
-fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.10.4", features = ["derive"]}
+fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.10.5", features = ["derive"]}
 
 [dev-dependencies]
 mockito = { version = "0.31", default-features = false}
