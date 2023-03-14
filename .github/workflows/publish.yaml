@@ -1,0 +1,55 @@
+name: Publish Hub
+
+permissions: read-all
+
+on:
+  push:
+    tags:        
+      - v*
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "The branch, tag or SHA to checkout"
+        required: true
+        type: string
+        default: "main"
+
+jobs:
+  publish:
+    name: Publish Connector to Hub
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        rust-profile: [release]
+        rust-target: [aarch64-unknown-linux-musl]  
+    steps:
+      - name: Install Fluvio
+        run: |
+          curl -fsS https://packages.fluvio.io/v1/install.sh | bash
+          echo "$HOME/.fluvio/bin" >> $GITHUB_PATH
+      - name: Install Fluvio CDK
+        run: fluvio install cdk --develop
+      - name: Fluvio Login to Hub
+        run: fluvio cloud login --email ${{ secrets.HUB_USER_EMAIL }} --password ${{ secrets.HUB_USER_PASSWORD }}
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.rust-target }}-${{ matrix.rust-profile }}
+      - name: Install Cross
+        run: cargo install cross
+      - name: Build
+        run: |
+          cross build --profile ${{ matrix.rust-profile }}  --target ${{ matrix.rust-target }} -p http-source
+          cp target/${{ matrix.rust-target }}/${{ matrix.rust-profile }}/* target/${{ matrix.rust-profile }}/ | true
+      - name: Publish
+        run: |
+          cd crates/http-source
+          cat hub/package-meta.yaml
+          cdk publish --public-yes --target ${{ matrix.rust-target }}
+
+
+    
+
