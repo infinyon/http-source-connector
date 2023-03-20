@@ -13,13 +13,13 @@ on:
 
 jobs:
   publish:
-    name: Publish Connector to Dev Hub
+    name: linux
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
         rust-profile: [release]
-        rust-target: [aarch64-unknown-linux-musl]  
+        rust-target: [aarch64-unknown-linux-musl, aarch64-unknown-linux-gnu, x86_64-unknown-linux-musl, x86_64-unknown-linux-gnu]  
     steps:
       - name: Install Fluvio
         run: |
