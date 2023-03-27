@@ -7,6 +7,6 @@ description: HTTP source connector
 license: Apache2
 visibility: public
 manifest:
-  - Connector.toml
-  - ../../target/release/http-source  
-  - ../../README.md
+  - ../Connector.toml
+  - ../../../target/release/http-source  
+  - ../../../README.md
