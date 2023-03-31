@@ -38,7 +38,7 @@ This is an example of simple connector config file:
 ```yaml
 # config-example.yaml
 meta:
-  version: latest
+  version: 0.1.0
   name: cat-facts
   type: http-source
   topic: cat-facts
@@ -63,7 +63,7 @@ The previous example can be extended to add extra transformations to outgoing re
 ```yaml
 # config-example.yaml
 meta:
-  version: latest
+  version: 0.1.0
   name: cat-facts
   type: http-source
   topic: cat-facts
