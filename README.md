@@ -70,7 +70,10 @@ meta:
   create-topic: true
 http:
   endpoint: "https://catfact.ninja/fact"
-  interval: 10s  
+  interval: 10s
+  headers:
+    - "Authorization: token MySecretToken"
+    - "Cache-Control: no-cache"
 transforms:
   - uses: infinyon/jolt@0.1.0
     with:
