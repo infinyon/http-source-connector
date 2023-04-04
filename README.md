@@ -16,7 +16,7 @@ Tutorial for [HTTP to SQL Pipeline](https://www.fluvio.io/docs/tutorials/data-pi
 | interval     | 10s                        | String  | Interval between each HTTP Request. This is in the form of "1s", "10ms", "1m", "1ns", etc. |
 | method       | GET                        | String  | GET, POST, PUT, HEAD                                                                       |
 | endpoint     | -                          | String  | HTTP URL endpoint                                                                          |
-| headers      | -                          | String[]| Request header(s) "Key:Value" pairs                                                        |
+| headers      | -                          | Array\<String\> | Request header(s) "Key:Value" pairs                                                        |
 | body         | -                          | String  | Request body e.g. in POST                                                                  |
 | user-agent   | "fluvio/http-source 0.1.0" | String  | Request user-agent                                                                         |
 | output_type  | text                       | String  | `text` = UTF-8 String Output, `json` = UTF-8 JSON Serialized String                        |
