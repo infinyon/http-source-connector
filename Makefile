@@ -7,3 +7,13 @@ test:
 	bats ./tests/get-test-full.bats
 	bats ./tests/post-test.bats
 
+test_fluvio_install:
+	fluvio cluster delete
+	fluvio cluster start --image-version latest
+	sleep 10
+	fluvio version
+	fluvio topic list
+	fluvio topic create foobar
+	sleep 3
+	echo foo | fluvio produce foobar
+	fluvio consume foobar -B -d

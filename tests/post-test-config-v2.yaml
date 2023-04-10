@@ -1,0 +1,12 @@
+version: latest
+name: http-json-connector
+type: http-source
+topic: TOPIC
+parameters:
+  endpoint: http://127.0.0.1:8080/post
+  method: POST
+  body: '{"name": "Pablo"} '
+  interval: 1s
+secrets:
+  RUST_BACKTRACE: full
+  RUST_LOG: debug
