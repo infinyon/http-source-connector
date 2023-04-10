@@ -2,13 +2,13 @@
 
 setup() {
     FILE=$(mktemp)
-    cp ./tests/post-test-config-v2.yaml $FILE
+    cp ./tests/cloud-http-post-test-v2.yaml $FILE
     UUID=$(uuidgen | awk '{print tolower($0)}')
     TOPIC=${UUID}-topic
 
     fluvio cloud login --email ${FLUVIO_CLOUD_TEST_USERNAME} --password ${FLUVIO_CLOUD_TEST_PASSWORD} --remote 'https://dev.infinyon.cloud'
     fluvio topic create $TOPIC
-    fluvio cloud connector create --config ./tests/cloud-http-post-test-v2.yaml
+    fluvio cloud connector create --config $FILE
 
     sed -i.BAK "s/TOPIC/${TOPIC}/g" $FILE
     cat $FILE
@@ -20,7 +20,7 @@ setup() {
 
 teardown() {
     fluvio topic delete $TOPIC
-    fluvio cloud connector delete http-json-connector-v2
+    fluvio cloud connector delete cloud-http-post-test-v2
     kill $CONNECTOR_PID
 }
 
