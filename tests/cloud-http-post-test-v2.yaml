@@ -1,5 +1,5 @@
 version: latest
-name: http-json-connector
+name: http-json-connector-v2
 type: http-source
 topic: TOPIC
 parameters:
