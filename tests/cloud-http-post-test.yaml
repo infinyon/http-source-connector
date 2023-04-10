@@ -1,0 +1,11 @@
+meta:
+  version: 0.1.0
+  name: CONNECTOR
+  type: http-source
+  topic: TOPIC
+
+http:
+  endpoint: https://httpbin.org/post
+  method: POST
+  body: '{"full_name": "Peter Parker"}'
+  interval: 3s

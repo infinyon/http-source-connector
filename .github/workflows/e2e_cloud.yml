@@ -1,0 +1,82 @@
+name: E2E Cloud
+
+concurrency:
+  group: e2e-cloud-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - staging
+      - trying
+  pull_request:
+    branches: [main]
+    paths:
+      - "**"
+      - "!/*.md"
+      - "!/**.md"
+
+jobs:
+  cloud_e2e_tests:
+    name: Cloud E2E (${{ matrix.os }}) ${{ matrix.environment }}.
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        environment: [Production, Development]
+
+    env:
+      RUST_BACKTRACE: full
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Install Fluvio CLI
+        run: |
+          curl -fsS https://packages.fluvio.io/v1/install.sh | bash
+          echo "$HOME/.fluvio/bin" >> $GITHUB_PATH
+
+      - name: Check Fluvio Installation
+        run: fluvio version
+
+      - name: Setup BATS
+        uses: mig4/setup-bats@v1
+
+      - name: Test Cloud Production
+        timeout-minutes: 20
+        if: ${{ matrix.environment == 'Production' }}
+        env:
+          FLUVIO_CLOUD_REMOTE: 'https://infinyon.cloud'
+          FLUVIO_CLOUD_TEST_USERNAME: ${{ secrets.HUB_USER_EMAIL }}
+          FLUVIO_CLOUD_TEST_PASSWORD: ${{ secrets.HUB_USER_PASSWORD }}
+        run: make cloud_e2e_test
+
+      - name: Test Cloud Development
+        timeout-minutes: 20
+        if: ${{ matrix.environment == 'Development' }}
+        env:
+          FLUVIO_CLOUD_REMOTE: 'https://dev.infinyon.cloud'
+          FLUVIO_CLOUD_TEST_USERNAME: ${{ secrets.DEV_HUB_USER_EMAIL }}
+          FLUVIO_CLOUD_TEST_PASSWORD: ${{ secrets.DEV_HUB_USER_PASSWORD }}
+        run: make cloud_e2e_test
+
+  done:
+    name: Done
+    needs:
+      - cloud_e2e_tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Done
+        run: echo "Done!"
+
+      - name: Slack Notification
+        uses: 8398a7/action-slack@v3
+        if: ${{ !success() }}
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

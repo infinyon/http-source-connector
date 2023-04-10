@@ -1,0 +1,12 @@
+meta:
+  version: 0.1.0
+  name: CONNECTOR
+  type: http-source
+  topic: TOPIC
+
+http:
+  endpoint: https://httpbin.org/get
+  method: GET
+  output_parts: full
+  output_type: json
+  interval: 3s
