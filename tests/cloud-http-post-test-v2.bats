@@ -6,7 +6,7 @@ setup() {
     UUID=$(uuidgen | awk '{print tolower($0)}')
     TOPIC=${UUID}-topic
 
-    fluvio cloud login --email ${FLUVIO_CLOUD_TEST_USERNAME} --password ${FLUVIO_CLOUD_TEST_PASSWORD} --remote 'https://dev.infinyon.cloud'
+    fluvio cloud login --email ${DEV_HUB_USER_EMAIL} --password ${DEV_HUB_USER_PASSWORD} --remote 'https://dev.infinyon.cloud'
     fluvio topic create $TOPIC
     fluvio cloud connector create --config $FILE
 

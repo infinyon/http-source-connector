@@ -126,8 +126,8 @@ jobs:
       - name: Test
         timeout-minutes: 20
         env:
-          FLUVIO_CLOUD_TEST_USERNAME: ${{ secrets.FLUVIO_CLOUD_TEST_USERNAME }}
-          FLUVIO_CLOUD_TEST_PASSWORD: ${{ secrets.FLUVIO_CLOUD_TEST_PASSWORD }}
+          DEV_HUB_USER_EMAIL: ${{ secrets.DEV_HUB_USER_EMAIL }}
+          DEV_HUB_USER_PASSWORD: ${{ secrets.DEV_HUB_USER_PASSWORD }}
         run: make test
 
       - name: Run diagnostics
