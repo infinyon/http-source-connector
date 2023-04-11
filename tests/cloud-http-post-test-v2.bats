@@ -8,6 +8,8 @@ setup() {
 
     fluvio cloud login --email ${DEV_HUB_USER_EMAIL} --password ${DEV_HUB_USER_PASSWORD} --remote 'https://dev.infinyon.cloud'
     fluvio topic create $TOPIC
+    fluvio cloud cluster create
+    sleep 20
     fluvio cloud connector create --config $FILE
 
     sed -i.BAK "s/TOPIC/${TOPIC}/g" $FILE
@@ -22,6 +24,7 @@ teardown() {
     fluvio topic delete $TOPIC
     fluvio cloud connector delete cloud-http-post-test-v2
     kill $CONNECTOR_PID
+    fluvio cloud cluster delete ${DEV_HUB_USER_EMAIL}
 }
 
 @test "cloud-http-post-test-v2" {
