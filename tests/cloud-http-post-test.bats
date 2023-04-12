@@ -7,7 +7,6 @@ setup() {
     TOPIC=${UUID}-topic
 
     fluvio cloud login --email ${FLUVIO_CLOUD_TEST_USERNAME} --password ${FLUVIO_CLOUD_TEST_PASSWORD} --remote 'https://dev.infinyon.cloud'
-    fluvio cloud cluster create || true
     fluvio topic create $TOPIC
     fluvio cloud connector create --config $FILE
 
@@ -22,7 +21,6 @@ setup() {
 teardown() {
     fluvio cloud connector delete cloud-http-post-test
     kill $CONNECTOR_PID
-    fluvio cloud cluster delete ${FLUVIO_CLOUD_TEST_USERNAME}
 }
 
 @test "cloud-http-post-test" {
