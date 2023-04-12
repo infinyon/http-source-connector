@@ -1,5 +1,7 @@
 #!/usr/bin/env bats
 
+load './bats-helpers/bats-assert/load'
+
 setup() {
     FILE=$(mktemp)
     cp ./tests/cloud-http-post-test.yaml $FILE
