@@ -3,7 +3,7 @@ name: cloud-http-post-test-v2
 type: http-source
 topic: TOPIC
 parameters:
-  endpoint: http://localhost:4887/post
+  endpoint: https://httpbin.org/post
   method: POST
   body: '{"name": "Pablo"}'
   interval: 1s

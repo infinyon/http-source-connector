@@ -57,12 +57,6 @@ jobs:
   integration_tests:
     name: Integration testing on - ${{ matrix.os }} for ${{ matrix.connector-name }} connector.
     runs-on: ${{ matrix.os }}
-    services:
-      httpbin:
-        image: 'kennethreitz/httpbin'
-        ports:
-          - 80:4887
-
     strategy:
       fail-fast: false
       matrix:
