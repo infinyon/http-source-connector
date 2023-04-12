@@ -35,7 +35,7 @@ impl HttpSource {
             .map(|h| h.resolve().unwrap_or_default())
             .collect::<Vec<_>>();
 
-        for (key, value) in headers.iter().flat_map(|h| h.split_once(":")) {
+        for (key, value) in headers.iter().flat_map(|h| h.split_once(':')) {
             request = request.header(key, value);
         }
         if let Some(ref body) = config.body {

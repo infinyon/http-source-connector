@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use fluvio_connector_common::{connector, secret::SecretString};
 use serde::Deserialize;
-use url::Url;
+
 
 const DEFAULT_USER_AGENT: &str = "fluvio/http-source 0.5.0";
 const DEFAULT_HTTP_METHOD: &str = "GET";
