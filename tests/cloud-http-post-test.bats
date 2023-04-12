@@ -23,7 +23,7 @@ teardown() {
     fluvio topic delete $TOPIC
     fluvio cloud connector delete cloud-http-post-test
     kill $CONNECTOR_PID
-    fluvio cloud cluster delete ${DEV_HUB_USER_EMAIL}
+    fluvio cloud cluster delete ${FLUVIO_CLOUD_TEST_USERNAME}
 }
 
 @test "cloud-http-post-test" {
