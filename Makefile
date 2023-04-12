@@ -6,7 +6,7 @@ test:
 	bats ./tests/get-test-json.bats
 	bats ./tests/get-test-full.bats
 	bats ./tests/post-test.bats
-	bats ./tests/cloud-http-post-test-v2.bats
+	bats ./tests/cloud-http-post-test.bats
 
 test_fluvio_install:
 	fluvio cluster delete
