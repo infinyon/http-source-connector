@@ -9,7 +9,7 @@ use async_trait::async_trait;
 use fluvio::Offset;
 use fluvio_connector_common::{tracing::error, Source};
 use futures::{stream::LocalBoxStream, StreamExt};
-use reqwest::{Client, RequestBuilder};
+use reqwest::{Client, RequestBuilder, Url};
 use tokio::time::Interval;
 use tokio_stream::wrappers::IntervalStream;
 
@@ -23,10 +23,19 @@ impl HttpSource {
     pub(crate) fn new(config: &HttpConfig) -> Result<Self> {
         let client = Client::new();
         let method = config.method.parse()?;
-        let mut request = client.request(method, config.endpoint.clone());
+        let url =
+            Url::parse(&config.endpoint.resolve()?).context("unable to parse http endpoint")?;
+
+        let mut request = client.request(method, url);
+
         request = request.header(reqwest::header::USER_AGENT, config.user_agent.clone());
-        let headers = config.headers.iter().flat_map(|h| h.split_once(':'));
-        for (key, value) in headers {
+        let headers = config
+            .headers
+            .iter()
+            .map(|h| h.resolve().unwrap_or_default())
+            .collect::<Vec<_>>();
+
+        for (key, value) in headers.iter().flat_map(|h| h.split_once(":")) {
             request = request.header(key, value);
         }
         if let Some(ref body) = config.body {

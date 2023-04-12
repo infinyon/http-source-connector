@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use fluvio_connector_common::connector;
+use fluvio_connector_common::{connector, secret::SecretString};
 use serde::Deserialize;
 use url::Url;
 
@@ -12,7 +12,7 @@ const DEFAULT_INTERVAL: Duration = Duration::from_secs(10);
 #[connector(config, name = "http")]
 pub(crate) struct HttpConfig {
     /// Endpoint for the http connector
-    pub endpoint: Url,
+    pub endpoint: SecretString,
 
     /// HTTP body for the request
     pub body: Option<String>,
@@ -32,7 +32,7 @@ pub(crate) struct HttpConfig {
 
     /// Headers to include in the HTTP request, in "Key=Value" format
     #[serde(default = "Vec::new")]
-    pub headers: Vec<String>,
+    pub headers: Vec<SecretString>,
 
     /// Response output parts: body | full
     #[serde(default = "Default::default")]
