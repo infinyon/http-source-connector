@@ -2,7 +2,7 @@
 
 setup() {
     FILE=$(mktemp)
-    cp ./tests/cloud-http-post-test-v2.yaml $FILE
+    cp ./tests/cloud-http-post-test.yaml $FILE
     UUID=$(uuidgen | awk '{print tolower($0)}')
     TOPIC=${UUID}-topic
 
