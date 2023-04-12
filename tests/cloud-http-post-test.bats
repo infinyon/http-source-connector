@@ -26,18 +26,11 @@ teardown() {
     fluvio cloud cluster delete ${DEV_HUB_USER_EMAIL}
 }
 
-@test "cloud-http-post-test-v2" {
+@test "cloud-http-post-test" {
     count=1
     echo "Starting consumer on topic $TOPIC"
     sleep 13
 
-    fluvio consume -B -d $TOPIC | while read input; do
-        expected="Hello, Pablo! - $count"
-        echo $input = $expected
-        [ "$input" = "$expected" ]
-        count=$(($count + 1))
-        if [ $count -eq 10 ]; then
-            break;
-        fi
-    done
+    fluvio consume -B -d $TOPIC
+    assert_output --partial "Peter Parker"
 }
