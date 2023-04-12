@@ -7,7 +7,7 @@ setup() {
     TOPIC=${UUID}-topic
 
     fluvio cloud login --email ${FLUVIO_CLOUD_TEST_USERNAME} --password ${FLUVIO_CLOUD_TEST_PASSWORD} --remote 'https://dev.infinyon.cloud'
-    fluvio cloud cluster create
+    fluvio cloud cluster create || true
     fluvio topic create $TOPIC
     fluvio cloud connector create --config $FILE
 
