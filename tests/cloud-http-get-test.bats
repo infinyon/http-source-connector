@@ -5,10 +5,10 @@ load './bats-helpers/bats-assert/load'
 
 setup() {
     FILE=$(mktemp)
-    cp ./tests/cloud-http-post-test.yaml $FILE
+    cp ./tests/cloud-http-get-test.yaml $FILE
     UUID=$(uuidgen | awk '{print tolower($0)}')
     TOPIC=${UUID}-topic
-    CONNECTOR=${UUID}-cloud-http-post-test
+    CONNECTOR=${UUID}-cloud-http-get-test
 
     sed -i.BAK "s/CONNECTOR/${CONNECTOR}/g" $FILE
     sed -i.BAK "s/TOPIC/${TOPIC}/g" $FILE
@@ -28,11 +28,11 @@ teardown() {
     kill $CONNECTOR_PID
 }
 
-@test "cloud-http-post-test" {
+@test "cloud-http-get-test" {
     echo "Starting consumer on topic $TOPIC"
     echo "Using connector $CONNECTOR"
     sleep 13
 
-    fluvio consume -B -d $TOPIC | grep "Peter Parker"
+    fluvio consume -B -d testing-connector-suff-topic | jq .status.code | grep 200
     assert_success
 }
