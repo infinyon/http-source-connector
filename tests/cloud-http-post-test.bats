@@ -24,7 +24,7 @@ setup() {
 }
 
 teardown() {
-    fluvio cloud connector delete cloud-http-post-test
+    fluvio cloud connector delete $CONNECTOR
     kill $CONNECTOR_PID
 }
 
