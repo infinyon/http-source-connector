@@ -137,3 +137,12 @@ jobs:
           name: integration_${{ matrix.connector-name }}
           path: diagnostics*.gz
           retention-days: 5
+
+      - name: Slack Notification
+        uses: 8398a7/action-slack@v3
+        if: ${{ !success() }}
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
