@@ -10,13 +10,13 @@ setup() {
     TOPIC=${UUID}-topic
     CONNECTOR=${UUID}-cloud-http-post-test
 
+    sed -i.BAK "s/CONNECTOR/${CONNECTOR}/g" $FILE
+    sed -i.BAK "s/TOPIC/${TOPIC}/g" $FILE
+    cat $FILE
+
     fluvio cloud login --email ${FLUVIO_CLOUD_TEST_USERNAME} --password ${FLUVIO_CLOUD_TEST_PASSWORD} --remote 'https://dev.infinyon.cloud'
     fluvio topic create $TOPIC
     fluvio cloud connector create --config $FILE
-
-    sed -i.BAK "s/TOPIC/${TOPIC}/g" $FILE
-    sed -i.BAK "s/CONNECTOR/${CONNECTOR}/g" $FILE
-    cat $FILE
 
     cargo build -p http-source
     ./target/debug/http-source --config $FILE & disown
