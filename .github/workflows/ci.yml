@@ -6,6 +6,10 @@ concurrency:
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - staging
+      - trying
   pull_request:
     branches: [main]
     paths:
