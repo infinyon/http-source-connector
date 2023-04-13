@@ -8,4 +8,4 @@ http:
   endpoint: https://httpbin.org/post
   method: POST
   body: '{"full_name": "Peter Parker"}'
-  interval: 1s
+  interval: 10s
