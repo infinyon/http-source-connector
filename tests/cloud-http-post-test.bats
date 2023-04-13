@@ -33,6 +33,6 @@ teardown() {
     echo "Using connector $CONNECTOR"
     sleep 13
 
-    fluvio consume -B --end 1 $TOPIC | jq '.json.full_name'
+    run timeout 15s fluvio consume -B --end 0 $TOPIC | jq '.json.full_name'
     assert_output --partial "Peter Parker"
 }
