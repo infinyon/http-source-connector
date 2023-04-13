@@ -29,11 +29,10 @@ teardown() {
 }
 
 @test "cloud-http-post-test" {
-    count=1
     echo "Starting consumer on topic $TOPIC"
     echo "Using connector $CONNECTOR"
     sleep 13
 
-    fluvio consume -B -d $TOPIC
+    fluvio consume -B -d $TOPIC | jq '.json.full_name'
     assert_output --partial "Peter Parker"
 }
