@@ -8,12 +8,14 @@ setup() {
     cp ./tests/cloud-http-post-test.yaml $FILE
     UUID=$(uuidgen | awk '{print tolower($0)}')
     TOPIC=${UUID}-topic
+    CONNECTOR=${UUID}-cloud-http-post-test
 
     fluvio cloud login --email ${FLUVIO_CLOUD_TEST_USERNAME} --password ${FLUVIO_CLOUD_TEST_PASSWORD} --remote 'https://dev.infinyon.cloud'
     fluvio topic create $TOPIC
     fluvio cloud connector create --config $FILE
 
     sed -i.BAK "s/TOPIC/${TOPIC}/g" $FILE
+    sed -i.BAK "s/CONNECTOR/${CONNECTOR}/g" $FILE
     cat $FILE
 
     cargo build -p http-source
@@ -29,6 +31,7 @@ teardown() {
 @test "cloud-http-post-test" {
     count=1
     echo "Starting consumer on topic $TOPIC"
+    echo "Using connector $CONNECTOR"
     sleep 13
 
     fluvio consume -B -d $TOPIC

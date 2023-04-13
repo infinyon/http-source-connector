@@ -1,6 +1,6 @@
 meta:
   version: 0.1.0
-  name: cloud-http-post-test
+  name: CONNECTOR
   type: http-source
   topic: TOPIC
 
