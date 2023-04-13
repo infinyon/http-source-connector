@@ -1,5 +1,6 @@
 #!/usr/bin/env bats
 
+load './bats-helpers/bats-support/load'
 load './bats-helpers/bats-assert/load'
 
 setup() {
