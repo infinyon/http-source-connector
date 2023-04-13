@@ -8,6 +8,7 @@ test:
 	bats ./tests/post-test.bats
 	bats ./tests/cloud-http-get-test.bats
 	bats ./tests/cloud-http-post-test.bats
+	bats ./tests/cloud-http-get-header-test.bats
 
 test_fluvio_install:
 	fluvio cluster delete
