@@ -33,6 +33,6 @@ teardown() {
     echo "Using connector $CONNECTOR"
     sleep 13
 
-    fluvio consume -B -d testing-connector-suff-topic | jq .status.code | grep 200
+    fluvio consume -B -d $TOPIC | jq .status.code | grep 200
     assert_success
 }
