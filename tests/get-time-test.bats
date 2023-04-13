@@ -35,7 +35,5 @@ teardown() {
         echo $difference
         [ $difference -lt ${MAX_MS_FOR_5_RECORDS} ]
     done
-
-    echo "Tests passed"
 }
 
