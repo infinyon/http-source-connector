@@ -33,6 +33,6 @@ teardown() {
     echo "Using connector $CONNECTOR"
     sleep 13
 
-    fluvio consume -B -d $TOPIC
-    assert_output --partial "Peter Parker"
+    fluvio consume -B -d $TOPIC | grep "Peter Parker"
+    assert_success
 }
