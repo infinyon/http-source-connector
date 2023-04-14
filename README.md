@@ -60,7 +60,7 @@ The produced record in Fluvio topic will be:
 ```
 ### Secrets
 
-Fluvio HTTP Source Connector support Secrets in the `endpoint` and in the `headers` parameters:
+Fluvio HTTP Source Connector supports Secrets in the `endpoint` and in the `headers` parameters:
 
 ```yaml
 # config-example.yaml
