@@ -86,7 +86,7 @@ jobs:
         uses: infinyon/fluvio@master
         with:
           cluster-type: k3d
-          version: latest
+          version: stable
       - name: Check Fluvio Installation
         run: |
           # TODO: When we're not using fluvio on the master branch, revert this.
