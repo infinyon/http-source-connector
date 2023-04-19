@@ -49,6 +49,6 @@ teardown() {
     echo "Check connector is status before testing"
     fluvio cloud connector list
 
-    fluvio consume -B -d $TOPIC | jq .status.code | grep 200
+    fluvio consume -B -d $TOPIC | grep "Peter Parker"
     assert_success
 }

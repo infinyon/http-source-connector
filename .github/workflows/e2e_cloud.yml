@@ -6,16 +6,8 @@ concurrency:
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - staging
-      - trying
-  pull_request:
-    branches: [main]
-    paths:
-      - "**"
-      - "!/*.md"
-      - "!/**.md"
+  schedule:
+    - cron: "0 * * * *"
 
 jobs:
   cloud_e2e_tests:
