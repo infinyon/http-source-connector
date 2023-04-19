@@ -1,4 +1,4 @@
-name: E2E Cloud
+name: E2E Integrations Test Cloud
 
 concurrency:
   group: e2e-cloud-${{ github.ref }}

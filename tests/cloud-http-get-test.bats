@@ -49,9 +49,6 @@ teardown() {
     echo "Check connector is status before testing"
     fluvio cloud connector list
 
-    echo "Executing tests after cooldown"
-    sleep 15
-
     fluvio consume -B -d $TOPIC | jq .status.code | grep 200
     assert_success
 }
