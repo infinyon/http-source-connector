@@ -38,7 +38,7 @@ This is an example of simple connector config file:
 ```yaml
 # config-example.yaml
 meta:
-  version: 0.1.0
+  version: 0.1.1
   name: cat-facts
   type: http-source
   topic: cat-facts
@@ -58,6 +58,30 @@ The produced record in Fluvio topic will be:
   "length": 158
 }
 ```
+### Secrets
+
+Fluvio HTTP Source Connector supports Secrets in the `endpoint` and in the `headers` parameters:
+
+```yaml
+# config-example.yaml
+meta:
+  version: 0.1.1
+  name: cat-facts
+  type: http-source
+  topic: cat-facts
+  create-topic: true
+http:
+ endpoint: 
+   secret:
+     name: MY_SECRET_URL
+ headers: 
+  # Note that in this case, MY_SECRET_HEADER should be formed with the headers format
+  # e.g. `Authorization: token my_token`
+  - secret:
+     name: MY_SECRET_HEADER
+ interval: 10s
+```
+
 
 ### Transformations
 Fluvio HTTP Source Connector supports [Transformations](https://www.fluvio.io/docs/concepts/transformations-chain/). Records can be modified before sending to Fluvio topic.
@@ -66,7 +90,7 @@ The previous example can be extended to add extra transformations to outgoing re
 ```yaml
 # config-example.yaml
 meta:
-  version: 0.1.0
+  version: 0.1.1
   name: cat-facts
   type: http-source
   topic: cat-facts
