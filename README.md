@@ -1,5 +1,5 @@
-# Fluvio HTTP Connector
-Official Infinyon HTTP connector
+# Fluvio HTTP Source Connector
+Official Infinyon HTTP Source Connector
 
 ## Source Connector
 Sources HTTP Responses given input HTTP request configuration options and `interval` x.
