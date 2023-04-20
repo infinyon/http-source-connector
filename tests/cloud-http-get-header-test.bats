@@ -9,9 +9,11 @@ setup() {
     UUID=$(uuidgen | awk '{print tolower($0)}')
     TOPIC=${UUID}-topic
     CONNECTOR=${UUID}-get-header
+    VERSION=$(cat ./crates/http-source/hub/package-meta.yaml | grep "^version:" | cut -d" " -f2)
 
     sed -i.BAK "s/CONNECTOR/${CONNECTOR}/g" $FILE
     sed -i.BAK "s/TOPIC/${TOPIC}/g" $FILE
+    sed -i.BAK "s/VERSION/${VERSION}/g" $FILE
     cat $FILE
 
     fluvio cloud login --email ${FLUVIO_CLOUD_TEST_USERNAME} --password ${FLUVIO_CLOUD_TEST_PASSWORD}
