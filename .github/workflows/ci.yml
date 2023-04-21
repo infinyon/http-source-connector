@@ -88,13 +88,8 @@ jobs:
           cluster-type: k3d
           version: stable
       - name: Check Fluvio Installation
-        run: |
-          fluvio version
-          fluvio topic list
-          fluvio topic create foobar
-          sleep 3
-          echo foo | fluvio produce foobar
-          fluvio consume foobar -B -d
+        run: make test_fluvio_install
+
       - name: Install Fluvio SMDK
         run: fluvio install smdk
       - uses: actions/checkout@v3
@@ -129,6 +124,7 @@ jobs:
           name: integration_${{ matrix.connector-name }}
           path: diagnostics*.gz
           retention-days: 5
+
   done:
     name: Done
     needs:
@@ -138,5 +134,3 @@ jobs:
     steps:
       - name: Done
         run: echo "Done!"
-
-
