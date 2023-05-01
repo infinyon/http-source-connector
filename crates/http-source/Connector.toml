@@ -6,6 +6,7 @@ apiVersion = "0.5.0"
 fluvio = "0.10.8"
 description = "HTTP source connector"
 license = "Apache-2.0"
+visibility = "public"
 
 [direction]
 source = true
