@@ -37,17 +37,20 @@ This is an example of simple connector config file:
 
 ```yaml
 # config-example.yaml
+apiVersion: 0.1.0
 meta:
-  version: 0.1.1
+  version: 0.2.0
   name: cat-facts
   type: http-source
   topic: cat-facts
   create-topic: true
+  secrets:
+    - name: AUTHORIZATION_TOKEN
 http:
   endpoint: "https://catfact.ninja/fact"
   interval: 10s  
   headers:
-    - "Authorization: token MySecretToken"
+    - "Authorization: token ${{ secrets.AUTHORIZATION_TOKEN }}"
     - "Cache-Control: no-cache"
 ```
 
@@ -64,21 +67,22 @@ Fluvio HTTP Source Connector supports Secrets in the `endpoint` and in the `head
 
 ```yaml
 # config-example.yaml
+apiVersion: 0.1.0
 meta:
-  version: 0.1.1
+  version: 0.2.0
   name: cat-facts
   type: http-source
   topic: cat-facts
   create-topic: true
+  secrets:
+    - name: MY_SECRET_URL
+    - name: MY_AUTHORIZATION_HEADER
 http:
  endpoint: 
    secret:
      name: MY_SECRET_URL
  headers: 
-  # Note that in this case, MY_SECRET_HEADER should be formed with the headers format
-  # e.g. `Authorization: token my_token`
-  - secret:
-     name: MY_SECRET_HEADER
+  - "Authorization: ${{ secrets.MY_AUTHORIZATION_HEADER }}
  interval: 10s
 ```
 
@@ -89,8 +93,9 @@ Fluvio HTTP Source Connector supports [Transformations](https://www.fluvio.io/do
 The previous example can be extended to add extra transformations to outgoing records:
 ```yaml
 # config-example.yaml
+apiVersion: 0.1.0
 meta:
-  version: 0.1.1
+  version: 0.2.0
   name: cat-facts
   type: http-source
   topic: cat-facts
