@@ -1,11 +1,8 @@
-# Fluvio HTTP Source Connector
-Official Infinyon HTTP Source Connector
+# Fluvio HTTP Inbound Connector
 
-## Source Connector
-Sources HTTP Responses given input HTTP request configuration options and `interval` x.
+Read HTTP Responses given input HTTP request configuration options and `interval` x and produces them to Fluvio topics.
 
 Supports HTTP/1.0, HTTP/1.1, HTTP/2.0 protocols.
-
 
 See [docs](https://www.fluvio.io/connectors/inbound/http/) here.
 Tutorial for [HTTP to SQL Pipeline](https://www.fluvio.io/docs/tutorials/data-pipeline/).
