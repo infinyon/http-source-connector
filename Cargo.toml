@@ -13,4 +13,4 @@ lto = true
 [workspace.dependencies]
 fluvio = { git = "https://github.com/infinyon/fluvio", tag = "v0.10.10"}
 fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.10.10-dev-1"}
-fluvio-smartmodule = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.10.10-dev-1" }
+fluvio-smartmodule = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.10.10" }
