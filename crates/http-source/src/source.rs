@@ -7,7 +7,7 @@ use crate::{
 use anyhow::{anyhow, Context, Result};
 use async_trait::async_trait;
 use fluvio::Offset;
-use fluvio_connector_common::{tracing::error, Source};
+use fluvio_connector_common::{tracing, Source};
 use futures::{stream::LocalBoxStream, StreamExt};
 use reqwest::{Client, RequestBuilder, Url};
 use tokio::time::Interval;
@@ -25,7 +25,6 @@ impl HttpSource {
         let method = config.method.parse()?;
         let url =
             Url::parse(&config.endpoint.resolve()?).context("unable to parse http endpoint")?;
-
         let mut request = client.request(method, url);
 
         request = request.header(reqwest::header::USER_AGENT, config.user_agent.clone());
@@ -38,12 +37,14 @@ impl HttpSource {
         for (key, value) in headers.iter().flat_map(|h| h.split_once(':')) {
             request = request.header(key, value);
         }
+
         if let Some(ref body) = config.body {
             request = request.body(body.clone());
         }
 
         let interval = tokio::time::interval(config.interval);
         let formatter = formatter(config.output_type, config.output_parts);
+
         Ok(Self {
             interval,
             request,
@@ -58,16 +59,23 @@ impl<'a> Source<'a, String> for HttpSource {
         let stream = IntervalStream::new(self.interval).filter_map(move |_| {
             let builder = self.request.try_clone();
             let formatter = self.formatter.clone();
+
             async move {
                 match request(builder, formatter.as_ref()).await {
-                    Ok(res) => Some(res),
+                    Ok(res) => {
+                        tracing::trace!("Request execution completed: {}", res);
+
+                        Some(res)
+                    }
                     Err(err) => {
-                        error!("Request execution failed: {}", err);
+                        tracing::error!("Request execution failed: {}", err);
+
                         None
                     }
                 }
             }
         });
+
         Ok(stream.boxed_local())
     }
 }
