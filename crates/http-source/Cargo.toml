@@ -19,7 +19,7 @@ humantime = { version = "2.1", default-features = false }
 url = { version = "2.4", default-features = false, features = ["serde"] }
 humantime-serde = { version = "1.1", default-features = false  }
 tokio-stream = { version = "0.1", default-features = false, features = ["time"] }
-tokio = { version = "1.28", default-features = false, features = ["time"]}
+tokio = { version = "1.29", default-features = false, features = ["time"]}
 
 fluvio = { workspace = true }
 fluvio-connector-common = { workspace = true, features = ["derive"]}
