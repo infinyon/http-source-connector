@@ -1,9 +1,9 @@
 [package]
 name = "http-source"
 group = "infinyon"
-version = "0.2.4"
+version = "0.2.5"
 apiVersion = "0.1.0"
-fluvio = "0.10.12"
+fluvio = "0.10.14"
 description = "HTTP source connector"
 license = "Apache-2.0"
 visibility = "public"
