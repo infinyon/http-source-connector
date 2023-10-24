@@ -31,7 +31,7 @@ jobs:
 
       - name: Install Fluvio CLI
         run: |
-          curl -fsS https://packages.fluvio.io/v1/install.sh | bash
+          curl -fsS https://hub.infinyon.cloud/install/install.sh | bash
           echo "$HOME/.fluvio/bin" >> $GITHUB_PATH
 
       - name: Check Fluvio Installation
