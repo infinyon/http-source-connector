@@ -11,7 +11,7 @@ description = "A Fluvio connector that fetches data from HTTP endpoints"
 async-trait = { version = "0.1", default-features = false}
 futures = { version = "0.3", default-features = false}
 anyhow = { version = "1.0" }
-async-std = { version = "1.12",  default-features = false, features = ["attributes", "tokio1"]}
+async-std = { workspace = true }
 serde = { version = "1.0", default-features = false, features = ["derive"]}
 reqwest = { version = "0.11" }
 serde_json = { version = "1.0", default-features = false, features = ["preserve_order"] }
