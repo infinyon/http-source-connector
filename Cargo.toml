@@ -14,5 +14,5 @@ lto = true
 async-std = { version = "1.12",  default-features = false, features = ["attributes", "tokio1"] }
 
 fluvio = { git = "https://github.com/infinyon/fluvio", tag = "v0.10.16"}
-fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.10.16"}
+fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.0"}
 fluvio-smartmodule = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.10.16" }
