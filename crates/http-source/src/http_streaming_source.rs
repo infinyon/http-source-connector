@@ -19,8 +19,6 @@ pub(crate) struct HttpStreamingSource {
     request: RequestBuilder,
     delimiter: Vec<u8>,
     formatter: Arc<dyn Formatter + Sync + Send>,
-    response_metadata: Option<HttpResponseMetadata>,
-    encoding: Option<&'static Encoding>,
 }
 
 #[async_trait]
@@ -33,10 +31,10 @@ impl<'a> Source<'a, String> for HttpStreamingSource {
 
         let response = request.send().await.context("request failed")?;
 
-        self.encoding = Some(transfer_encoding(&response));
-        self.response_metadata = Some(HttpResponseMetadata::new(&response)?);
+        let response_metadata = HttpResponseMetadata::new(&response)?;
+        let encoding = transfer_encoding(&response);
 
-        Ok(self.record_stream(response))
+        Ok(self.record_stream(response, response_metadata, encoding))
     }
 }
 
@@ -71,14 +69,14 @@ impl HttpStreamingSource {
             delimiter,
             request,
             formatter,
-            response_metadata: None,
-            encoding: None,
         })
     }
 
     pub(crate) fn record_stream(
         self,
         response: reqwest::Response,
+        response_metadata: HttpResponseMetadata,
+        encoding: &'static Encoding,
     ) -> LocalBoxStream<'static, String> {
         let (tx1, rx1) = mpsc::unbounded_channel();
 
@@ -87,7 +85,7 @@ impl HttpStreamingSource {
                 response.bytes_stream().boxed(),
                 tx1,
                 self.delimiter,
-                self.encoding,
+                encoding,
             )
             .await;
         });
@@ -95,7 +93,7 @@ impl HttpStreamingSource {
         let (tx2, rx2) = mpsc::unbounded_channel();
 
         tokio::spawn(async move {
-            write_to_output_stream(rx1, tx2, self.response_metadata, self.formatter).await;
+            write_to_output_stream(rx1, tx2, response_metadata, self.formatter).await;
         });
 
         Box::pin(UnboundedReceiverStream::new(rx2))
@@ -106,7 +104,7 @@ async fn read_http_stream(
     mut stream: BoxStream<'_, Result<bytes::Bytes, reqwest::Error>>,
     tx: mpsc::UnboundedSender<String>,
     delimiter: Vec<u8>,
-    encoding: Option<&'static Encoding>,
+    encoding: &'static Encoding,
 ) {
     let mut buf = BytesMut::new();
 
@@ -115,7 +113,7 @@ async fn read_http_stream(
             Ok(bytes) => {
                 buf.extend_from_slice(bytes.as_ref());
 
-                dequeue_and_forward_records(&mut buf, &tx, &delimiter, &encoding)
+                dequeue_and_forward_records(&mut buf, &tx, &delimiter, encoding)
             }
             Err(e) => {
                 error!("could not read data from http response stream: {}", e);
@@ -128,12 +126,12 @@ fn dequeue_and_forward_records(
     buf: &mut BytesMut,
     tx: &mpsc::UnboundedSender<String>,
     delimiter: &[u8],
-    encoding: &Option<&'static Encoding>,
+    encoding: &'static Encoding,
 ) {
     while let Some(index) = first_delim_index(buf, delimiter) {
         let next_record = dequeue_next_record(buf, index, delimiter);
         let decoded_record =
-            decoded_record_body(next_record, encoding.expect("encoding should be set"));
+            decoded_record_body(next_record, encoding);
 
         let stream_result = tx.send(decoded_record);
         if let Err(e) = stream_result {
@@ -145,13 +143,11 @@ fn dequeue_and_forward_records(
 async fn write_to_output_stream(
     mut rx: mpsc::UnboundedReceiver<String>,
     tx: mpsc::UnboundedSender<String>,
-    response_metadata: Option<HttpResponseMetadata>,
+    response_metadata: HttpResponseMetadata,
     formatter: Arc<dyn Formatter + Sync + Send>,
 ) {
-    let metadata = response_metadata.expect("response metadata should be set");
-
     while let Some(record) = rx.recv().await {
-        let res = format_record(record, metadata.clone(), &formatter);
+        let res = format_record(record, response_metadata.clone(), &formatter);
 
         match res {
             Ok(record) => {
