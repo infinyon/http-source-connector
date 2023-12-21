@@ -43,6 +43,16 @@ title = "Interval"
 description = "Interval of polling (1s, 10m, etc.)"
 type = "string"
 
+[custom.properties.stream]
+title = "Stream"
+description = "Flag to indicate streaming mode"
+type = "bool"
+
+[custom.properties.delimiter]
+title = "Delimiter"
+description = "Delimiter to split chunks when streaming"
+type = "string"
+
 [custom.properties.headers]
 title = "HttpHeaders"
 description = "Headers to include in the HTTP request, in Key=Value format"

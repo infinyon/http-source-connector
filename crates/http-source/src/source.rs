@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::{
     config::HttpConfig,
-    formatter::{formatter, Formatter},
+    formatter::{formatter, Formatter, HttpResponseMetadata, HttpResponseRecord},
 };
 use anyhow::{anyhow, Context, Result};
 use async_trait::async_trait;
@@ -43,6 +43,7 @@ impl HttpSource {
         }
 
         let interval = tokio::time::interval(config.interval);
+
         let formatter = formatter(config.output_type, config.output_parts);
 
         Ok(Self {
@@ -82,6 +83,15 @@ impl<'a> Source<'a, String> for HttpSource {
 
 async fn request(builder: Option<RequestBuilder>, formatter: &dyn Formatter) -> Result<String> {
     let request = builder.ok_or_else(|| anyhow!("Request must be cloneable"))?;
+
     let response = request.send().await.context("Request failed")?;
-    formatter.to_string(response).await
+    let response_metadata = HttpResponseMetadata::new(&response)?;
+    let body = response
+        .text()
+        .await
+        .context("Failed to read response body")?;
+
+    let record_payload = HttpResponseRecord::new(response_metadata, body);
+
+    formatter.to_string(&record_payload)
 }

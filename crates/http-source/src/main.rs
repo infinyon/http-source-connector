@@ -1,5 +1,6 @@
 mod config;
 mod formatter;
+mod http_streaming_source;
 mod source;
 
 use anyhow::Result;
@@ -12,15 +13,20 @@ use fluvio_connector_common::{
     Source,
 };
 
-use crate::source::HttpSource;
+use http_streaming_source::HttpStreamingSource;
+use source::HttpSource;
 
 const SIGNATURES: &str = concat!("InfinyOn HTTP Source Connector ", env!("CARGO_PKG_VERSION"));
 
 #[connector(source)]
 async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
     debug!(?config);
-    let source = HttpSource::new(&config)?;
-    let mut stream = source.connect(None).await?;
+
+    let mut stream = if config.stream {
+        HttpStreamingSource::new(&config)?.connect(None).await?
+    } else {
+        HttpSource::new(&config)?.connect(None).await?
+    };
 
     info!("Starting {SIGNATURES}");
 

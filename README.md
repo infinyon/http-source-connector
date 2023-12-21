@@ -1,6 +1,11 @@
 # Fluvio HTTP Inbound Connector
 
-Read HTTP Responses given input HTTP request configuration options and `interval` x and produces them to Fluvio topics.
+Read HTTP Responses given input HTTP request configuration options and produce them
+to Fluvio topics.
+
+Supports both polling of atomic endpoints and streaming of HTTP responses when given the `stream` configuration option.
+When polling, an `interval` configuration option is accepted. When streaming a `delimiter` configuration option, which
+defaults to `'\n'`, is accepted.
 
 Supports HTTP/1.0, HTTP/1.1, HTTP/2.0 protocols.
 
@@ -18,6 +23,8 @@ Tutorial for [HTTP to SQL Pipeline](https://www.fluvio.io/docs/tutorials/data-pi
 | user-agent   | "fluvio/http-source 0.1.0" | String  | Request user-agent                                                                         |
 | output_type  | text                       | String  | `text` = UTF-8 String Output, `json` = UTF-8 JSON Serialized String                        |
 | output_parts | body                       | String  | `body` = body only, `full` = all status, header and body parts                             |
+| stream       | false                      | bool    | Flag to indicate HTTP streaming mode                                                       |
+| delimiter    | '\n'                       | String  | Delimiter to separate records when producing from an HTTP streaming endpoint               |
 
 #### Record Type Output
 | Matrix                                                      | Output                                  |
