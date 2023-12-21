@@ -130,8 +130,7 @@ fn dequeue_and_forward_records(
 ) {
     while let Some(index) = first_delim_index(buf, delimiter) {
         let next_record = dequeue_next_record(buf, index, delimiter);
-        let decoded_record =
-            decoded_record_body(next_record, encoding);
+        let decoded_record = decoded_record_body(next_record, encoding);
 
         let stream_result = tx.send(decoded_record);
         if let Err(e) = stream_result {
@@ -253,7 +252,7 @@ mod test {
 
         let (tx, rx) = mpsc::unbounded_channel();
         tokio::spawn(async move {
-            read_http_stream(http_stream, tx, "!".into(), Some(encoding_rs::UTF_8)).await
+            read_http_stream(http_stream, tx, "!".into(), encoding_rs::UTF_8).await
         });
         let mut chunked_stream = Box::pin(UnboundedReceiverStream::new(rx));
 
@@ -275,7 +274,7 @@ mod test {
 
         let (tx, rx) = mpsc::unbounded_channel();
         tokio::spawn(async move {
-            read_http_stream(http_stream, tx, "!".into(), Some(encoding_rs::UTF_8)).await
+            read_http_stream(http_stream, tx, "!".into(), encoding_rs::UTF_8).await
         });
         let mut chunked_stream = Box::pin(UnboundedReceiverStream::new(rx));
 
@@ -295,7 +294,7 @@ mod test {
 
         let (tx, rx) = mpsc::unbounded_channel();
         tokio::spawn(async move {
-            read_http_stream(http_stream, tx, "!".into(), Some(encoding_rs::UTF_8)).await
+            read_http_stream(http_stream, tx, "!".into(), encoding_rs::UTF_8).await
         });
         let mut chunked_stream = Box::pin(UnboundedReceiverStream::new(rx));
 
@@ -316,7 +315,7 @@ mod test {
 
         let (tx, rx) = mpsc::unbounded_channel();
         tokio::spawn(async move {
-            read_http_stream(http_stream, tx, "!".into(), Some(encoding_rs::UTF_8)).await
+            read_http_stream(http_stream, tx, "!".into(), encoding_rs::UTF_8).await
         });
         let mut chunked_stream = Box::pin(UnboundedReceiverStream::new(rx));
 
@@ -338,7 +337,7 @@ mod test {
 
         let (tx, rx) = mpsc::unbounded_channel();
         tokio::spawn(async move {
-            read_http_stream(http_stream, tx, "!".into(), Some(encoding_rs::UTF_8)).await
+            read_http_stream(http_stream, tx, "!".into(), encoding_rs::UTF_8).await
         });
         let mut chunked_stream = Box::pin(UnboundedReceiverStream::new(rx));
 
