@@ -9,7 +9,7 @@ setup() {
     UUID=$(uuidgen | awk '{print tolower($0)}')
     TOPIC=${UUID}-topic
     CONNECTOR=${UUID}-get
-    VERSION=$(cat ./crates/http-source/hub/package-meta.yaml | grep "^version:" | cut -d" " -f2)
+    VERSION=$(cat ./crates/http-source/Connector.toml | grep "^version =" | cut -d " " -f3 | tr -d '"')
 
     sed -i.BAK "s/CONNECTOR/${CONNECTOR}/g" $FILE
     sed -i.BAK "s/TOPIC/${TOPIC}/g" $FILE
