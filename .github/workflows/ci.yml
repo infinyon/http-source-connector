@@ -72,24 +72,13 @@ jobs:
       RUST_BACKTRACE: full
     steps:
       - uses: actions/checkout@v4
-      - uses: AbsaOSS/k3d-action@v2.4.0
-        name: "Create fluvio k3d Cluster"
-        with:
-          cluster-name: "fluvio"
-          args: --timeout 5m
-      - name: Ensure k3d cluster is ready
-        run: |
-          sleep 5
-          ./actions/k3d-check.sh
       - name: Install Fluvio Local Cluster
         timeout-minutes: 10
         uses: infinyon/fluvio@master
         with:
-          cluster-type: k3d
           version: stable
       - name: Check Fluvio Installation
         run: make test_fluvio_install
-
       - name: Install Fluvio SMDK
         run: fluvio install smdk
       - uses: actions/checkout@v4
