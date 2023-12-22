@@ -61,6 +61,7 @@ jobs:
     name: Done
     needs:
       - cloud_e2e_tests
+    if: success() || failure()
     runs-on: ubuntu-latest
     steps:
       - name: Done
