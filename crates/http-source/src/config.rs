@@ -6,6 +6,7 @@ use serde::Deserialize;
 const DEFAULT_USER_AGENT: &str = "fluvio/http-source 0.5.0";
 const DEFAULT_HTTP_METHOD: &str = "GET";
 const DEFAULT_INTERVAL: Duration = Duration::from_secs(10);
+const DEFAULT_DELIMITER: &str = "\n";
 
 #[derive(Debug)]
 #[connector(config, name = "http")]
@@ -28,6 +29,14 @@ pub(crate) struct HttpConfig {
     /// Ex: '150ms', '20s'
     #[serde(with = "humantime_serde", default = "default_interval")]
     pub interval: Duration,
+
+    /// Indicate streaming mode, defaults to false
+    #[serde(default = "Default::default")]
+    pub stream: bool,
+
+    /// Delimiter used to split records when streaming
+    #[serde(default = "default_delimiter")]
+    pub delimiter: String,
 
     /// Headers to include in the HTTP request, in "Key=Value" format
     #[serde(default = "Vec::new")]
@@ -68,4 +77,8 @@ fn default_http_method() -> String {
 
 fn default_interval() -> Duration {
     DEFAULT_INTERVAL
+}
+
+fn default_delimiter() -> String {
+    DEFAULT_DELIMITER.into()
 }

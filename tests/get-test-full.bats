@@ -39,6 +39,6 @@ teardown() {
     assert_output --partial 'content-type: text/plain;charset=utf-8'
 
     run fluvio consume --start 1 --end 1 -d $TOPIC
-    assert_output --partial 'Hello, Fluvio! - ' 
+    assert_output --partial 'Hello, Fluvio! - '
 }
 
