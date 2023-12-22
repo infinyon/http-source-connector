@@ -8,12 +8,13 @@ authors = ["Fluvio Contributors <team@fluvio.io>"]
 description = "A Fluvio connector that fetches data from HTTP endpoints"
 
 [dependencies]
+async-std = { workspace = true }
+serde = { workspace = true }
+
 async-trait = { version = "0.1", default-features = false }
-bytes = "1.1.0"
+bytes =  { version = "1.1.0", default-features = false }
 futures = { version = "0.3", default-features = false }
 anyhow = { version = "1.0" }
-async-std = { workspace = true, default-features = false, features = ["attributes", "tokio1"] }
-serde = { version = "1.0", default-features = false, features = ["derive"] }
 reqwest = { version = "0.11", features = ["stream"] }
 serde_json = { version = "1.0", default-features = false, features = ["preserve_order"] }
 humantime = { version = "2.1", default-features = false }
@@ -21,8 +22,8 @@ url = { version = "2.4", default-features = false, features = ["serde"] }
 humantime-serde = { version = "1.1", default-features = false }
 tokio-stream = { version = "0.1", default-features = false, features = ["time"] }
 tokio = { version = "1.28", default-features = false, features = ["time"] }
-encoding_rs = "0.8.33"
-mime = "0.3.17"
+encoding_rs = { version = "0.8", default-features = false }
+mime = { version = "0.3", default-features = false }
 
-fluvio = { workspace = true }
-fluvio-connector-common = { workspace = true, features = ["derive"] }
+fluvio = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.2" }
+fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.2", features = ["derive"] }
