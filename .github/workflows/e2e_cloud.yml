@@ -6,15 +6,14 @@ concurrency:
 
 on:
   workflow_dispatch:
-  # schedule:
-  #  - cron: "0 0 * * *"
-  # push:
-  #  branches:
-  #    - main
+  workflow_run:
+    workflows: [Publish Hub]
+    types: [completed]
 
 jobs:
   cloud_e2e_tests:
     name: Cloud E2E (${{ matrix.os }}) ${{ matrix.environment }}.
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
