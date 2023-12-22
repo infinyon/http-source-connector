@@ -130,3 +130,22 @@ Now produced records will have a different shape, for example:
 ```
 
 Read more about [JSON to JSON transformations](https://www.fluvio.io/smartmodules/certified/jolt/).
+
+### Streaming Mode
+
+Provide the `stream` configuration option to enable streaming mode with `delimiter` to determine how the incoming records are separated.
+
+```yaml
+# config-example.yaml
+apiVersion: 0.1.0
+meta:
+  version: 0.3.0
+  name: wiki-updates
+  type: http-source
+  topic: wiki-updates
+http:
+  endpoint: "https://stream.wikimedia.org/v2/stream/recentchange"
+  method: GET
+  stream: true
+  delimiter: "\n\n"
+```
