@@ -79,8 +79,6 @@ jobs:
           version: stable
       - name: Check Fluvio Installation
         run: make test_fluvio_install
-      - name: Install Fluvio SMDK
-        run: fluvio install smdk
       - uses: actions/checkout@v4
       - name: Install Rust stable
         uses: actions-rs/toolchain@v1
