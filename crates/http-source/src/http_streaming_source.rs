@@ -3,7 +3,10 @@ use async_trait::async_trait;
 use bytes::BytesMut;
 use encoding_rs::{Encoding, UTF_8};
 use fluvio::Offset;
-use fluvio_connector_common::{tracing::error, Source};
+use fluvio_connector_common::{
+    tracing::{error, warn},
+    Source,
+};
 use futures::{stream::BoxStream, stream::LocalBoxStream, StreamExt};
 use reqwest::{Client, RequestBuilder, Url};
 use std::sync::Arc;
@@ -11,14 +14,44 @@ use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 
 use crate::{
+    backoff::Backoff,
     config::HttpConfig,
     formatter::{formatter, Formatter, HttpResponseMetadata, HttpResponseRecord},
+    BACKOFF_LIMIT,
 };
+
+use futures::Stream;
 
 pub(crate) struct HttpStreamingSource {
     request: RequestBuilder,
     delimiter: Vec<u8>,
     formatter: Arc<dyn Formatter + Sync + Send>,
+}
+
+pub(crate) async fn reconnect_stream_with_backoff(
+    config: &HttpConfig,
+    backoff: &mut Backoff,
+) -> Result<std::pin::Pin<Box<dyn Stream<Item = String>>>> {
+    let wait = backoff.next();
+
+    if wait > BACKOFF_LIMIT {
+        error!("Max retry reached, exiting");
+    }
+
+    match HttpStreamingSource::new(config)?.connect(None).await {
+        Ok(stream) => Ok(stream),
+        Err(err) => {
+            warn!(
+                "Error connecting to streaming source: \"{}\", reconnecting in {}.",
+                err,
+                humantime::format_duration(wait)
+            );
+
+            async_std::task::sleep(wait).await;
+
+            Err(err)
+        }
+    }
 }
 
 #[async_trait]
@@ -115,7 +148,7 @@ async fn read_http_stream(
                 dequeue_and_forward_records(&mut buf, &tx, &delimiter, encoding)
             }
             Err(e) => {
-                error!("could not read data from http response stream: {e}");
+                warn!("could not read data from http response stream: {}", e);
             }
         }
     }

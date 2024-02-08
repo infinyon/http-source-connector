@@ -7,6 +7,7 @@ test:
 	bats ./tests/get-stream-test-json.bats
 	bats ./tests/get-stream-test-full.bats
 	bats ./tests/get-stream-test-full-json.bats
+	bats ./tests/broken-stream-test.bats
 	bats ./tests/post-test.bats
 	bats ./tests/get-time-test.bats
 	bats ./tests/get-smartmodule-test.bats
