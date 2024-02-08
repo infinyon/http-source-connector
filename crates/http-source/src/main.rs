@@ -11,7 +11,7 @@ use config::HttpConfig;
 use fluvio::{RecordKey, TopicProducer};
 use fluvio_connector_common::{
     connector,
-    tracing::{debug, error, info, trace},
+    tracing::{debug, info, trace},
     Source,
 };
 
@@ -22,14 +22,21 @@ use source::HttpSource;
 const SIGNATURES: &str = concat!("InfinyOn HTTP Source Connector ", env!("CARGO_PKG_VERSION"));
 
 #[connector(source)]
-#[allow(unreachable_code)]
 async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
     debug!(?config);
     let mut backoff = Backoff::new();
 
     loop {
         let mut stream = if config.stream {
-            match connect_streaming_source(&config, &mut backoff).await {
+            let wait = backoff.next();
+
+            if wait > 10000 {
+                info!("Max retry reached, exiting");
+
+                break;
+            }
+
+            match connect_streaming_source(&config, wait).await {
                 Ok(stream) => stream,
                 Err(_err) => {
                     continue;
@@ -54,18 +61,12 @@ async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
 
 async fn connect_streaming_source(
     config: &HttpConfig,
-    backoff: &mut Backoff,
+    wait: u64,
 ) -> Result<std::pin::Pin<Box<dyn Stream<Item = String>>>> {
     match HttpStreamingSource::new(config)?.connect(None).await {
         Ok(stream) => Ok(stream),
         Err(err) => {
             info!("Error connecting to streaming source: {}", err);
-
-            let wait = backoff.next();
-
-            if wait > 10000 {
-                error!("Failed to connect to streaming source after 20 retries");
-            }
 
             async_std::task::sleep(std::time::Duration::from_millis(100 * wait)).await;
 
