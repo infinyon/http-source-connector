@@ -1,5 +1,5 @@
 pub(crate) enum Backoff {
-    Fib(u64, u64)
+    Fib(u64, u64),
 }
 
 impl Backoff {

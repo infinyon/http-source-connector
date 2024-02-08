@@ -1,8 +1,8 @@
+mod backoff;
 mod config;
 mod formatter;
 mod http_streaming_source;
 mod source;
-mod backoff;
 
 use anyhow::Result;
 use async_std::stream::StreamExt;
@@ -11,7 +11,7 @@ use config::HttpConfig;
 use fluvio::{RecordKey, TopicProducer};
 use fluvio_connector_common::{
     connector,
-    tracing::{error, debug, info, trace},
+    tracing::{debug, error, info, trace},
     Source,
 };
 
@@ -32,7 +32,7 @@ async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
             match connect_streaming_source(&config, &mut backoff).await {
                 Ok(stream) => stream,
                 Err(_err) => {
-                   continue;
+                    continue;
                 }
             }
         } else {
@@ -52,8 +52,10 @@ async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
     Ok(())
 }
 
-
-async fn connect_streaming_source(config: &HttpConfig, backoff: &mut Backoff) -> Result<std::pin::Pin<Box<dyn Stream<Item = String>>>> {
+async fn connect_streaming_source(
+    config: &HttpConfig,
+    backoff: &mut Backoff,
+) -> Result<std::pin::Pin<Box<dyn Stream<Item = String>>>> {
     match HttpStreamingSource::new(config)?.connect(None).await {
         Ok(stream) => Ok(stream),
         Err(err) => {
