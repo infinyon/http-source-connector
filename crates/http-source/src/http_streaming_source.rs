@@ -32,7 +32,7 @@ impl<'a> Source<'a, String> for HttpStreamingSource {
             .try_clone()
             .context("request must be cloneable")?;
 
-        let response = request.send().await.context("request failed")?;
+        let response = request.send().await.context("send request")?;
 
         let response_metadata = HttpResponseMetadata::new(&response)?;
         let encoding = transfer_encoding(&response);
@@ -45,8 +45,7 @@ impl HttpStreamingSource {
     pub(crate) fn new(config: &HttpConfig) -> Result<Self> {
         let client = Client::new();
         let method = config.method.parse()?;
-        let url =
-            Url::parse(&config.endpoint.resolve()?).context("unable to parse http endpoint")?;
+        let url = Url::parse(&config.endpoint.resolve()?).context("parse http endpoint")?;
         let mut request = client.request(method, url);
 
         request = request.header(reqwest::header::USER_AGENT, config.user_agent.clone());
@@ -137,7 +136,7 @@ fn dequeue_and_forward_records(
 
         let stream_result = tx.send(decoded_record);
         if let Err(e) = stream_result {
-            error!("Couldn't send bytes to formatting task: {}", e);
+            error!("Couldn't send bytes to formatting task: {e}");
         }
     }
 }
@@ -156,11 +155,11 @@ async fn write_to_output_stream(
                 let stream_result = tx.send(record);
 
                 if let Err(e) = stream_result {
-                    error!("Couldn't send records to output stream: {}", e);
+                    error!("Couldn't send records to output stream: {e}");
                 }
             }
             Err(err) => {
-                error!("Error formatting record: {}", err);
+                error!("Error formatting record: {err:?}");
             }
         }
     }

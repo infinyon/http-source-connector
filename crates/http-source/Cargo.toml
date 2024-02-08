@@ -21,9 +21,9 @@ humantime = { version = "2.1", default-features = false }
 url = { version = "2.4", default-features = false, features = ["serde"] }
 humantime-serde = { version = "1.1", default-features = false }
 tokio-stream = { version = "0.1", default-features = false, features = ["time"] }
-tokio = { version = "1.28", default-features = false, features = ["time"] }
+tokio = { version = "1.36", default-features = false, features = ["time"] }
 encoding_rs = { version = "0.8", default-features = false }
 mime = { version = "0.3", default-features = false }
 
-fluvio = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.2" }
-fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.2", features = ["derive"] }
+fluvio = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.3" }
+fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.3", features = ["derive"] }

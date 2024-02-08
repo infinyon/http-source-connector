@@ -7,7 +7,10 @@ use crate::{
 use anyhow::{anyhow, Context, Result};
 use async_trait::async_trait;
 use fluvio::Offset;
-use fluvio_connector_common::{tracing, Source};
+use fluvio_connector_common::{
+    tracing::{error, trace},
+    Source,
+};
 use futures::{stream::LocalBoxStream, StreamExt};
 use reqwest::{Client, RequestBuilder, Url};
 use tokio::time::Interval;
@@ -64,12 +67,12 @@ impl<'a> Source<'a, String> for HttpSource {
             async move {
                 match request(builder, formatter.as_ref()).await {
                     Ok(res) => {
-                        tracing::trace!("Request execution completed: {}", res);
+                        trace!("Request execution completed: {res}");
 
                         Some(res)
                     }
                     Err(err) => {
-                        tracing::error!("Request execution failed: {}", err);
+                        error!("Request execution failed: {err:?}");
 
                         None
                     }
@@ -84,12 +87,12 @@ impl<'a> Source<'a, String> for HttpSource {
 async fn request(builder: Option<RequestBuilder>, formatter: &dyn Formatter) -> Result<String> {
     let request = builder.ok_or_else(|| anyhow!("Request must be cloneable"))?;
 
-    let response = request.send().await.context("Request failed")?;
+    let response = request.send().await.context("send request")?;
     let response_metadata = HttpResponseMetadata::new(&response)?;
     let body = response
         .text()
         .await
-        .context("Failed to read response body")?;
+        .context("read response body as text")?;
 
     let record_payload = HttpResponseRecord::new(response_metadata, body);
 
