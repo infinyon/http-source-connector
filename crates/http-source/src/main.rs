@@ -15,12 +15,13 @@ use fluvio_connector_common::{
     Source,
 };
 
-use futures::Stream;
-use http_streaming_source::HttpStreamingSource;
+use crate::http_streaming_source::reconnect_stream_with_backoff;
 use source::HttpSource;
 
 const SIGNATURES: &str = concat!("InfinyOn HTTP Source Connector ", env!("CARGO_PKG_VERSION"));
+const BACKOFF_LIMIT: u64 = 100000; //1000 seconds
 
+#[allow(unreachable_code)]
 #[connector(source)]
 async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
     debug!(?config);
@@ -28,15 +29,7 @@ async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
 
     loop {
         let mut stream = if config.stream {
-            let wait = backoff.next();
-
-            if wait > 10000 {
-                info!("Max retry reached, exiting");
-
-                break;
-            }
-
-            match connect_streaming_source(&config, wait).await {
+            match reconnect_stream_with_backoff(&config, &mut backoff).await {
                 Ok(stream) => stream,
                 Err(_err) => {
                     continue;
@@ -57,20 +50,4 @@ async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
     }
 
     Ok(())
-}
-
-async fn connect_streaming_source(
-    config: &HttpConfig,
-    wait: u64,
-) -> Result<std::pin::Pin<Box<dyn Stream<Item = String>>>> {
-    match HttpStreamingSource::new(config)?.connect(None).await {
-        Ok(stream) => Ok(stream),
-        Err(err) => {
-            info!("Error connecting to streaming source: {}", err);
-
-            async_std::task::sleep(std::time::Duration::from_millis(100 * wait)).await;
-
-            Err(err)
-        }
-    }
 }

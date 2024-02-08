@@ -14,14 +14,40 @@ use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 
 use crate::{
+    backoff::Backoff,
     config::HttpConfig,
     formatter::{formatter, Formatter, HttpResponseMetadata, HttpResponseRecord},
+    BACKOFF_LIMIT,
 };
+
+use futures::Stream;
 
 pub(crate) struct HttpStreamingSource {
     request: RequestBuilder,
     delimiter: Vec<u8>,
     formatter: Arc<dyn Formatter + Sync + Send>,
+}
+
+pub(crate) async fn reconnect_stream_with_backoff(
+    config: &HttpConfig,
+    backoff: &mut Backoff,
+) -> Result<std::pin::Pin<Box<dyn Stream<Item = String>>>> {
+    let wait = backoff.next();
+
+    if wait > BACKOFF_LIMIT {
+        error!("Max retry reached, exiting");
+    }
+
+    match HttpStreamingSource::new(config)?.connect(None).await {
+        Ok(stream) => Ok(stream),
+        Err(err) => {
+            debug!("Error connecting to streaming source: {}", err);
+
+            async_std::task::sleep(std::time::Duration::from_millis(10 * wait)).await;
+
+            Err(err)
+        }
+    }
 }
 
 #[async_trait]
