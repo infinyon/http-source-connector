@@ -34,6 +34,8 @@ teardown() {
     kill $CONNECTOR_PID
 }
 
+# A SIGKILL sent to the server will result in a EOF being sent to the connector,
+# which results in a reqwest error
 @test "http-connector-broken-stream-test" {
     echo "Starting consumer on topic $TOPIC"
     sleep 3
@@ -46,13 +48,13 @@ teardown() {
 
     kill $MOCK_PID
     start_mock_server
-    sleep 3
+    sleep 1
 
     curl -s http://localhost:8080/get
     sleep 1
 
     run fluvio consume --start 1 --end 1 -d $TOPIC 
-    assert_output --partial $'event:get request(s)\ndata:{ \"gets\": 2, \"posts\": 0 }'
+    assert_output --partial $'event:get request(s)\ndata:{ \"gets\": 1, \"posts\": 0 }'
 
 
 }

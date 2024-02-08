@@ -19,23 +19,34 @@ use source::HttpSource;
 const SIGNATURES: &str = concat!("InfinyOn HTTP Source Connector ", env!("CARGO_PKG_VERSION"));
 
 #[connector(source)]
+#[allow(unreachable_code)]
 async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
     debug!(?config);
 
-    let mut stream = if config.stream {
-        HttpStreamingSource::new(&config)?.connect(None).await?
-    } else {
-        HttpSource::new(&config)?.connect(None).await?
-    };
+    loop {
+        let mut stream = if config.stream {
+            match HttpStreamingSource::new(&config)?.connect(None).await {
+                Ok(stream) => stream,
+                Err(err) => {
+                    info!("Error connecting to streaming source: {}", err);
+                    //sleep 500ms before reconnecting
+                    async_std::task::sleep(std::time::Duration::from_millis(500)).await;
+                    continue;
+                }
+            }
+        } else {
+            HttpSource::new(&config)?.connect(None).await?
+        };
 
-    info!("Starting {SIGNATURES}");
+        info!("Starting {SIGNATURES}");
 
-    while let Some(item) = stream.next().await {
-        trace!(?item);
-        producer.send(RecordKey::NULL, item).await?;
+        while let Some(item) = stream.next().await {
+            trace!(?item);
+            producer.send(RecordKey::NULL, item).await?;
+        }
+
+        info!("Consumer loop finished");
     }
-
-    info!("Consumer loop finished");
 
     Ok(())
 }

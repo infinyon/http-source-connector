@@ -3,7 +3,10 @@ use async_trait::async_trait;
 use bytes::BytesMut;
 use encoding_rs::{Encoding, UTF_8};
 use fluvio::Offset;
-use fluvio_connector_common::{tracing::error, Source};
+use fluvio_connector_common::{
+    tracing::{debug, error},
+    Source,
+};
 use futures::{stream::BoxStream, stream::LocalBoxStream, StreamExt};
 use reqwest::{Client, RequestBuilder, Url};
 use std::sync::Arc;
@@ -116,7 +119,7 @@ async fn read_http_stream(
                 dequeue_and_forward_records(&mut buf, &tx, &delimiter, encoding)
             }
             Err(e) => {
-                error!("could not read data from http response stream: {}", e);
+                debug!("could not read data from http response stream: {}", e);
             }
         }
     }
