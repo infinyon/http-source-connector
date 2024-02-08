@@ -4,7 +4,7 @@ use bytes::BytesMut;
 use encoding_rs::{Encoding, UTF_8};
 use fluvio::Offset;
 use fluvio_connector_common::{
-    tracing::{debug, error},
+    tracing::{error, warn},
     Source,
 };
 use futures::{stream::BoxStream, stream::LocalBoxStream, StreamExt};
@@ -41,9 +41,13 @@ pub(crate) async fn reconnect_stream_with_backoff(
     match HttpStreamingSource::new(config)?.connect(None).await {
         Ok(stream) => Ok(stream),
         Err(err) => {
-            debug!("Error connecting to streaming source: {}", err);
+            warn!(
+                "Error connecting to streaming source: \"{}\", reconnecting in {}.",
+                err,
+                humantime::format_duration(wait)
+            );
 
-            async_std::task::sleep(std::time::Duration::from_millis(10 * wait)).await;
+            async_std::task::sleep(wait).await;
 
             Err(err)
         }
@@ -144,7 +148,7 @@ async fn read_http_stream(
                 dequeue_and_forward_records(&mut buf, &tx, &delimiter, encoding)
             }
             Err(e) => {
-                debug!("could not read data from http response stream: {}", e);
+                warn!("could not read data from http response stream: {}", e);
             }
         }
     }
