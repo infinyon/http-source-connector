@@ -158,7 +158,6 @@ impl WebSocketSource {
             },
             ping_interval_ms: ws_config.and_then(|c| c.ping_interval_ms).unwrap_or(10_000),
             max_retries: reconnection_policy.map(|c| c.max_retries).unwrap_or(1)
-
         })
     }
 
