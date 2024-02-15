@@ -11,6 +11,7 @@ test:
 	bats ./tests/post-test.bats
 	bats ./tests/get-time-test.bats
 	bats ./tests/get-smartmodule-test.bats
+	bats ./tests/websocket-test.bats
 
 cloud_e2e_test:
 	bats ./tests/cloud-http-get-test.bats
