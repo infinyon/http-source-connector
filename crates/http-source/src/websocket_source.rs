@@ -104,7 +104,6 @@ async fn websocket_writer_and_stream<'a> (request: WSRequest, max_retries: u32) 
                 Ok(message) => {
                     match message {
                         Message::Text(text) => {
-                            info!("Got message: {}", text);
                             Some(text)
                         }
                         Message::Binary(data) => {
