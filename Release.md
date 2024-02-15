@@ -1,0 +1,1 @@
+To release, open a [Release template issue](https://github.com/infinyon/http-source-connector/issues/new?assignees=&labels=tracking&projects=&template=release_checklist.md&title=Release+vX.Y.Z) and follow the checklist
