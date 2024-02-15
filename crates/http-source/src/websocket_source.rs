@@ -1,4 +1,3 @@
-use serde::{Deserialize, Serialize};
 use url::Url;
 use anyhow::{Result,Context};
 use async_trait::async_trait;
@@ -46,14 +45,6 @@ impl PingStream for WSPingOnlySink {
         debug!("Ping sent");
         Ok(())
     }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub(crate) struct WebSocketEvent {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub message_text: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub message_bytes: Option<Vec<u8>>,
 }
 
 // Computes the backoff delay using an exponential strategy
