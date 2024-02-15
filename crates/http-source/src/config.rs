@@ -49,7 +49,27 @@ pub(crate) struct HttpConfig {
     /// Response output type: text | json
     #[serde(default = "Default::default")]
     pub output_type: OutputType,
+
+    #[serde(default = "Default::default")]
+    pub websocket_config: Option<WebSocketConfig>
 }
+
+#[connector(config, name = "websocket")]
+#[derive(Debug)]
+pub(crate) struct WebSocketConfig {
+    pub(crate) subscription_message: Option<String>,
+    pub(crate) reconnection_policy: Option<ReconnectionPolicy>,
+    // TODO: pub(crate) max_message_size: Option<usize>, 
+    pub(crate) ping_interval_ms: Option<u64>,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub(crate) struct ReconnectionPolicy {
+    pub(crate) max_retries: u32,
+    pub(crate) base_delay_ms: usize,
+    pub(crate) max_delay_ms: usize,
+}
+
 
 #[derive(Debug, Default, Deserialize, Clone, Copy)]
 #[serde(rename_all = "snake_case")]

@@ -11,3 +11,4 @@ async-std = { workspace = true }
 serde = { workspace = true }
 
 tide = { version = "0.16" }
+tide-websockets = "0.4.0"

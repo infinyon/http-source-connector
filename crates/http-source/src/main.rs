@@ -1,11 +1,13 @@
 mod config;
 mod formatter;
+mod websocket_source;
 mod http_streaming_source;
 mod source;
 
 use anyhow::Result;
 use async_std::stream::StreamExt;
 use config::HttpConfig;
+use url::Url;
 use fluvio::{RecordKey, TopicProducer};
 use fluvio_connector_common::{
     connector,
@@ -15,6 +17,7 @@ use fluvio_connector_common::{
 
 use http_streaming_source::HttpStreamingSource;
 use source::HttpSource;
+use websocket_source::WebSocketSource;
 
 const SIGNATURES: &str = concat!("InfinyOn HTTP Source Connector ", env!("CARGO_PKG_VERSION"));
 
@@ -22,7 +25,10 @@ const SIGNATURES: &str = concat!("InfinyOn HTTP Source Connector ", env!("CARGO_
 async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
     debug!(?config);
 
-    let mut stream = if config.stream {
+    let url = Url::parse(&config.endpoint.resolve()?)?;
+    let mut stream = if url.scheme() == "ws" || url.scheme() == "wss" {
+        WebSocketSource::new(&config)?.connect(None).await?
+    } else if config.stream {
         HttpStreamingSource::new(&config)?.connect(None).await?
     } else {
         HttpSource::new(&config)?.connect(None).await?
