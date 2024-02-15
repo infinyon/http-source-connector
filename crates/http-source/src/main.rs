@@ -1,9 +1,9 @@
 mod backoff;
 mod config;
 mod formatter;
-mod websocket_source;
 mod http_streaming_source;
 mod source;
+mod websocket_source;
 
 use std::time::Duration;
 
@@ -11,13 +11,13 @@ use anyhow::Result;
 use async_std::stream::StreamExt;
 use backoff::Backoff;
 use config::HttpConfig;
-use url::Url;
 use fluvio::{RecordKey, TopicProducer};
 use fluvio_connector_common::{
     connector,
     tracing::{debug, info, trace, warn},
     Source,
 };
+use url::Url;
 
 use crate::http_streaming_source::reconnect_stream_with_backoff;
 use source::HttpSource;

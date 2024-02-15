@@ -30,14 +30,14 @@ async fn main() -> tide::Result<()> {
     app.at("/stream_count_updates")
         .get(sse::endpoint(stream_count_updates));
     app.at("/websocket")
-    .get(WebSocket::new(|_request, stream| async move {      
-        for i in 1..11 {
-            stream
-                .send_string(format!("Hello, Fluvio! - {}", i))
-                .await?;
-        }
-        Ok(())
-    }));
+        .get(WebSocket::new(|_request, stream| async move {
+            for i in 1..11 {
+                stream
+                    .send_string(format!("Hello, Fluvio! - {}", i))
+                    .await?;
+            }
+            Ok(())
+        }));
 
     app.listen("127.0.0.1:8080").await?;
     Ok(())

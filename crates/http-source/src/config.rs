@@ -51,7 +51,7 @@ pub(crate) struct HttpConfig {
     pub output_type: OutputType,
 
     #[serde(default = "Default::default")]
-    pub websocket_config: Option<WebSocketConfig>
+    pub websocket_config: Option<WebSocketConfig>,
 }
 
 #[connector(config, name = "websocket")]
@@ -59,7 +59,7 @@ pub(crate) struct HttpConfig {
 pub(crate) struct WebSocketConfig {
     pub(crate) subscription_message: Option<String>,
     pub(crate) reconnection_policy: Option<ReconnectionPolicy>,
-    // TODO: pub(crate) max_message_size: Option<usize>, 
+    // TODO: pub(crate) max_message_size: Option<usize>,
     pub(crate) ping_interval_ms: Option<u64>,
 }
 
@@ -69,7 +69,6 @@ pub(crate) struct ReconnectionPolicy {
     pub(crate) base_delay_ms: usize,
     pub(crate) max_delay_ms: usize,
 }
-
 
 #[derive(Debug, Default, Deserialize, Clone, Copy)]
 #[serde(rename_all = "snake_case")]
