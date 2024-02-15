@@ -44,7 +44,7 @@ struct WSPingOnlySink(SplitSink<WebSocketStream<Transport>, Message>);
 
 #[async_trait]
 impl PingStream for WSPingOnlySink {
-    async fn ping(self: &mut Self) -> Result<()> {
+    async fn ping(&mut self) -> Result<()> {
         self.0.send(Message::Ping(Vec::new())).await.map_err(|e| {
             error!("Failed to send ping: {}", e);
             anyhow::Error::new(e)
@@ -88,8 +88,8 @@ async fn establish_connection(
                 if let Some(reconnection_policy) = request.reconnection_policy.as_ref() {
                     let delay = compute_backoff(
                         attempt as usize,
-                        reconnection_policy.base_delay_ms as usize,
-                        reconnection_policy.max_delay_ms as usize,
+                        reconnection_policy.base_delay_ms,
+                        reconnection_policy.max_delay_ms,
                     );
                     sleep(Duration::from_millis(delay as u64)).await;
                 }
@@ -171,7 +171,7 @@ impl WebSocketSource {
                 url: Url::parse(&config.endpoint.resolve()?)
                     .context("unable to parse http endpoint")?,
                 subscription_message: ws_config.and_then(|c| c.subscription_message.to_owned()),
-                reconnection_policy: reconnection_policy.map(|c| c.clone()),
+                reconnection_policy: reconnection_policy.cloned(),
             },
             ping_interval_ms: ws_config.and_then(|c| c.ping_interval_ms).unwrap_or(10_000),
             max_retries: reconnection_policy.map(|c| c.max_retries).unwrap_or(1),
@@ -193,7 +193,7 @@ impl WebSocketSource {
                 let (mut ping_only, ws_stream) = ws_stream_result.unwrap();
 
                 let mut ws_stream = ws_stream
-                    .map(|s| StreamElement::Read(s))
+                    .map(StreamElement::Read)
                     .merge(IntervalStream::new(tokio::time::interval(Duration::from_millis(self.ping_interval_ms))).map(|_| StreamElement::PingInterval));
 
                 while let Some(item) = ws_stream.next().await {
