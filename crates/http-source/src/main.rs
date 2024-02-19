@@ -14,12 +14,13 @@ use config::HttpConfig;
 use fluvio::{RecordKey, TopicProducer};
 use fluvio_connector_common::{
     connector,
-    tracing::{debug, info, trace, warn},
+    tracing::{debug, error, info, trace, warn},
     Source,
 };
+use futures::stream::LocalBoxStream;
 use url::Url;
 
-use crate::http_streaming_source::reconnect_stream_with_backoff;
+use crate::http_streaming_source::HttpStreamingSource;
 use source::HttpSource;
 use websocket_source::WebSocketSource;
 
@@ -35,17 +36,17 @@ async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
     let mut backoff = Backoff::new();
 
     loop {
-        let mut stream = if url.scheme() == "ws" || url.scheme() == "wss" {
-            WebSocketSource::new(&config)?.connect(None).await?
+        let stream = if url.scheme() == "ws" || url.scheme() == "wss" {
+            with_backoff(&config, &mut backoff, WebSocketSource::new).await
         } else if config.stream {
-            match reconnect_stream_with_backoff(&config, &mut backoff).await {
-                Ok(stream) => stream,
-                Err(_err) => {
-                    continue;
-                }
-            }
+            with_backoff(&config, &mut backoff, HttpStreamingSource::new).await
         } else {
-            HttpSource::new(&config)?.connect(None).await?
+            with_backoff(&config, &mut backoff, HttpSource::new).await
+        };
+
+        let mut stream = match stream {
+            Ok(stream) => stream,
+            Err(_) => continue,
         };
 
         info!("Connected to source endpoint! Starting {SIGNATURES}");
@@ -60,4 +61,35 @@ async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
     }
 
     Ok(())
+}
+
+async fn with_backoff<'a, F, C>(
+    config: &HttpConfig,
+    backoff: &mut Backoff,
+    new: F,
+) -> Result<LocalBoxStream<'a, String>>
+where
+    F: FnOnce(&HttpConfig) -> Result<C>,
+    C: Source<'a, String>,
+{
+    let wait = backoff.next();
+
+    if wait > BACKOFF_LIMIT {
+        error!("Max retry reached, exiting");
+    }
+
+    match new(config)?.connect(None).await {
+        Ok(stream) => Ok(stream),
+        Err(err) => {
+            warn!(
+                "Error connecting to streaming source: \"{}\", reconnecting in {}.",
+                err,
+                humantime::format_duration(wait)
+            );
+
+            async_std::task::sleep(wait).await;
+
+            Err(err)
+        }
+    }
 }

@@ -11,26 +11,24 @@ use futures::{
     SinkExt,
 };
 use tokio::net::TcpStream;
-use tokio::time::{sleep, Duration};
+use tokio::time::Duration;
 use tokio_stream::{wrappers::IntervalStream, StreamExt};
 use tokio_tungstenite::{
     connect_async, tungstenite::protocol::Message, MaybeTlsStream, WebSocketStream,
 };
 use url::Url;
 
-use crate::config::{HttpConfig, ReconnectionPolicy};
+use crate::config::HttpConfig;
 
 pub(crate) struct WebSocketSource {
     request: WSRequest,
     ping_interval_ms: u64,
-    max_retries: u32,
 }
 
 #[derive(Clone)]
 struct WSRequest {
     url: Url,
     subscription_message: Option<String>,
-    reconnection_policy: Option<ReconnectionPolicy>,
 }
 
 type Transport = MaybeTlsStream<TcpStream>;
@@ -55,62 +53,29 @@ impl PingStream for WSPingOnlySink {
     }
 }
 
-// Computes the backoff delay using an exponential strategy
-fn compute_backoff(attempt: usize, base_delay_ms: usize, max_delay_ms: usize) -> usize {
-    let exponent = 2usize.pow(attempt.min(31) as u32); // Prevent overflow, cap exponent at 2^31
-    let delay = base_delay_ms.saturating_mul(exponent);
-    delay.min(max_delay_ms)
-}
-
-async fn establish_connection(
-    request: WSRequest,
-    max_retries: u32,
-) -> Result<WebSocketStream<Transport>> {
-    let mut attempt = 0;
-
-    loop {
-        match connect_async(&request.url).await {
-            Ok((mut ws_stream, _)) => {
-                info!("WebSocket connected to {}", &request.url);
-                if let Some(message) = request.subscription_message.as_ref() {
-                    ws_stream.send(Message::Text(message.to_owned())).await?;
-                }
-                return Ok(ws_stream);
+async fn establish_connection(request: WSRequest) -> Result<WebSocketStream<Transport>> {
+    match connect_async(&request.url).await {
+        Ok((mut ws_stream, _)) => {
+            info!("WebSocket connected to {}", &request.url);
+            if let Some(message) = request.subscription_message.as_ref() {
+                ws_stream.send(Message::Text(message.to_owned())).await?;
             }
-            Err(e) => {
-                error!("WebSocket connection error on attempt {}: {}", attempt, e);
-                attempt += 1;
-
-                if attempt >= max_retries {
-                    break;
-                }
-
-                if let Some(reconnection_policy) = request.reconnection_policy.as_ref() {
-                    let delay = compute_backoff(
-                        attempt as usize,
-                        reconnection_policy.base_delay_ms,
-                        reconnection_policy.max_delay_ms,
-                    );
-                    sleep(Duration::from_millis(delay as u64)).await;
-                }
-            }
+            Ok(ws_stream)
+        }
+        Err(e) => {
+            error!("WebSocket connection error: {}", e);
+            Err(anyhow::Error::new(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                e,
+            )))
         }
     }
-
-    Err(anyhow::Error::new(std::io::Error::new(
-        std::io::ErrorKind::Other,
-        format!(
-            "Failed to establish WebSocket connection after {} attempts",
-            attempt
-        ),
-    )))
 }
 
 async fn websocket_writer_and_stream<'a>(
     request: WSRequest,
-    max_retries: u32,
 ) -> Result<(WSPingOnlySink, LocalBoxStream<'a, String>)> {
-    let ws_stream = establish_connection(request, max_retries)
+    let ws_stream = establish_connection(request)
         .await
         .context("Failed to establish WebSocket connection")?;
 
@@ -163,46 +128,37 @@ async fn websocket_writer_and_stream<'a>(
 impl WebSocketSource {
     pub(crate) fn new(config: &HttpConfig) -> Result<Self> {
         let ws_config = config.websocket_config.as_ref();
-
-        let reconnection_policy = ws_config.and_then(|ws| ws.reconnection_policy.as_ref());
-
         Ok(Self {
             request: WSRequest {
                 url: Url::parse(&config.endpoint.resolve()?)
                     .context("unable to parse http endpoint")?,
                 subscription_message: ws_config.and_then(|c| c.subscription_message.to_owned()),
-                reconnection_policy: reconnection_policy.cloned(),
             },
             ping_interval_ms: ws_config.and_then(|c| c.ping_interval_ms).unwrap_or(10_000),
-            max_retries: reconnection_policy.map(|c| c.max_retries).unwrap_or(1),
         })
     }
 
-    async fn reconnect_and_run<'a>(self) -> Result<LocalBoxStream<'a, String>> {
+    async fn connect_and_run<'a>(self) -> Result<LocalBoxStream<'a, String>> {
         enum StreamElement {
             Read(String),
             PingInterval,
         }
 
+        let ws_stream_result = websocket_writer_and_stream(self.request.clone()).await?;
+
         let repeated_websocket = Box::pin(async_stream::stream! {
-            loop {
-                let ws_stream_result = websocket_writer_and_stream(self.request.clone(), self.max_retries).await;
-                if ws_stream_result.is_err() {
-                    break;
-                }
-                let (mut ping_only, ws_stream) = ws_stream_result.unwrap();
+            let (mut ping_only, ws_stream) = ws_stream_result;
 
-                let mut ws_stream = ws_stream
-                    .map(StreamElement::Read)
-                    .merge(IntervalStream::new(tokio::time::interval(Duration::from_millis(self.ping_interval_ms))).map(|_| StreamElement::PingInterval));
+            let mut ws_stream = ws_stream
+                .map(StreamElement::Read)
+                .merge(IntervalStream::new(tokio::time::interval(Duration::from_millis(self.ping_interval_ms))).map(|_| StreamElement::PingInterval));
 
-                while let Some(item) = ws_stream.next().await {
-                    match item {
-                        StreamElement::Read(s) => yield s,
-                        StreamElement::PingInterval => {
-                            let ping_res = ping_only.ping().await;
-                            if ping_res.is_err() { break; }
-                        }
+            while let Some(item) = ws_stream.next().await {
+                match item {
+                    StreamElement::Read(s) => yield s,
+                    StreamElement::PingInterval => {
+                        let ping_res = ping_only.ping().await;
+                        if ping_res.is_err() { break; }
                     }
                 }
             }
@@ -215,7 +171,7 @@ impl WebSocketSource {
 #[async_trait]
 impl<'a> Source<'a, String> for WebSocketSource {
     async fn connect(self, _offset: Option<Offset>) -> Result<LocalBoxStream<'a, String>> {
-        self.reconnect_and_run()
+        self.connect_and_run()
             .await
             .context("Failed to run WebSocket connection")
     }
