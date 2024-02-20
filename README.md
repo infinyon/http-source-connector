@@ -3,9 +3,10 @@
 Read HTTP Responses given input HTTP request configuration options and produce them
 to Fluvio topics.
 
-Supports both polling of atomic endpoints and streaming of HTTP responses when given the `stream` configuration option.
-When polling, an `interval` configuration option is accepted. When streaming a `delimiter` configuration option, which
-defaults to `'\n'`, is accepted.
+Supports polling of atomic endpoints, streaming of HTTP responses and connecting to websocket endpoints. 
+Polling periodically makes requests to HTTP endpoints. Each response is treated as a record, with the time between requests controlled by `interval`.
+Streaming Processes HTTP responses as data streams. Records are emitted for each encountered delimiter character (controlled by `stream`, '\n' by default).
+Websocket Establishes connections to websocket endpoints. Records are emitted for each incoming message received over the websocket connection.
 
 Supports HTTP/1.0, HTTP/1.1, HTTP/2.0 protocols.
 
@@ -17,8 +18,8 @@ Tutorial for [HTTP to SQL Pipeline](https://www.fluvio.io/docs/tutorials/data-pi
 | :------------| :--------------------------| :-----  | :----------------------------------------------------------------------------------------- |
 | interval     | 10s                        | String  | Interval between each HTTP Request. This is in the form of "1s", "10ms", "1m", "1ns", etc. |
 | method       | GET                        | String  | GET, POST, PUT, HEAD                                                                       |
-| endpoint     | -                          | String  | HTTP URL endpoint                                                                          |
-| headers      | -                          | Array\<String\> | Request header(s) "Key:Value" pairs                                                  |
+| endpoint     | -                          | String  | HTTP URL endpoint. Use `ws://` for websocket URLs.                                         |
+| headers      | -                          | Array\<String\> | Request header(s) "Key:Value" pairs                                                |
 | body         | -                          | String  | Request body e.g. in POST                                                                  |
 | user-agent   | "fluvio/http-source 0.1.0" | String  | Request user-agent                                                                         |
 | output_type  | text                       | String  | `text` = UTF-8 String Output, `json` = UTF-8 JSON Serialized String                        |
@@ -148,4 +149,19 @@ http:
   method: GET
   stream: true
   delimiter: "\n\n"
+```
+
+### Websocket Mode
+Connect to a websocket endpoint using a `ws://` URL. When reading text messages, they are emitted as equivalent records. Binary messages are initially attempted to be converted into strings.
+
+```yaml
+# config-example.yaml
+apiVersion: 0.1.0
+meta:
+  version: 0.3.2
+  name: websocket-connector
+  type: http-source
+  topic: websocket-updates
+http:
+  endpoint: ws://websocket.example/websocket
 ```
