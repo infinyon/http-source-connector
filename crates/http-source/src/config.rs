@@ -49,6 +49,17 @@ pub(crate) struct HttpConfig {
     /// Response output type: text | json
     #[serde(default = "Default::default")]
     pub output_type: OutputType,
+
+    #[serde(default = "Default::default")]
+    pub websocket_config: Option<WebSocketConfig>,
+}
+
+#[connector(config, name = "websocket")]
+#[derive(Debug)]
+pub(crate) struct WebSocketConfig {
+    pub(crate) subscription_message: Option<String>,
+    // TODO: pub(crate) max_message_size: Option<usize>,
+    pub(crate) ping_interval_ms: Option<u64>,
 }
 
 #[derive(Debug, Default, Deserialize, Clone, Copy)]

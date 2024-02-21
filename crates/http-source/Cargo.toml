@@ -12,6 +12,7 @@ async-std = { workspace = true }
 serde = { workspace = true }
 
 async-trait = { version = "0.1", default-features = false }
+async-stream = "0.3.5"
 bytes =  { version = "1.1.0", default-features = false }
 futures = { version = "0.3", default-features = false }
 anyhow = { version = "1.0" }
@@ -22,6 +23,8 @@ url = { version = "2.4", default-features = false, features = ["serde"] }
 humantime-serde = { version = "1.1", default-features = false }
 tokio-stream = { version = "0.1", default-features = false, features = ["time"] }
 tokio = { version = "1.36", default-features = false, features = ["time"] }
+tokio-tungstenite = "*"
+tungstenite = "*"
 encoding_rs = { version = "0.8", default-features = false }
 mime = { version = "0.3", default-features = false }
 

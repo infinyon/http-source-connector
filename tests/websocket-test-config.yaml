@@ -1,0 +1,10 @@
+meta:
+  version: latest
+  name: http-json-connector
+  type: websocket-source
+  topic: TOPIC
+  create_topic: false
+  producer:
+    linger: 0ms
+http:
+  endpoint: ws://127.0.0.1:8080/websocket
