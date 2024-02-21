@@ -6,7 +6,7 @@ to Fluvio topics.
 This connector can be configured to operate in three modes.
 
 - [Polling](#usage-example): Unless otherwise specified, the endpoint will be polled periodically, with the polling interval specified by providing the `interval` config option. Each response will be produced as an individual Fluvio record.
-- [Streaming](#streaming-mode): When the `stream` config option is provided, the HTTP response will be processed as a data stream. A record will be produced to Fluvio every time a `delimiter` segment is encountered, which is set to `\n` by default.
+- [Streaming](#streaming-mode): When the `stream` config option is provided, the HTTP response will be processed as a [data stream](https://en.wikipedia.org/wiki/Chunked_transfer_encoding). A record will be produced to Fluvio every time a `delimiter` segment is encountered, which is set to `\n` by default.
 - [WebSocket](#websocket-mode): When the provided `endpoint` config option is prefixed with `ws://`, a WebSocket connection will be established, and each incoming message will be produced.
 
 Supports HTTP/1.0, HTTP/1.1, HTTP/2.0 protocols.
