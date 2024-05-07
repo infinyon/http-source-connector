@@ -45,7 +45,7 @@ This is an example of simple connector config file for polling an endpoint:
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.3.3
+  version: 0.3.6
   name: cat-facts
   type: http-source
   topic: cat-facts
