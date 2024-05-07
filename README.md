@@ -75,7 +75,7 @@ Fluvio HTTP Source Connector supports Secrets in the `endpoint` and in the `head
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.3.3
+  version: 0.3.6
   name: cat-facts
   type: http-source
   topic: cat-facts
@@ -101,7 +101,7 @@ The previous example can be extended to add extra transformations to outgoing re
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.3.3
+  version: 0.3.6
   name: cat-facts
   type: http-source
   topic: cat-facts
@@ -159,7 +159,7 @@ Connect to a websocket endpoint using a `ws://` URL. When reading text messages,
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.3.3
+  version: 0.3.6
   name: websocket-connector
   type: http-source
   topic: websocket-updates
