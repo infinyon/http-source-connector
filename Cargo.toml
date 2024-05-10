@@ -13,4 +13,3 @@ lto = true
 [workspace.dependencies]
 async-std = { version = "1.12",  default-features = false, features = ["attributes", "tokio1"] }
 serde = { version = "1.0", default-features = false, features = ["derive"] }
-
