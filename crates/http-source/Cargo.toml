@@ -23,7 +23,7 @@ url = { version = "2.4", default-features = false, features = ["serde"] }
 humantime-serde = { version = "1.1", default-features = false }
 tokio-stream = { version = "0.1", default-features = false, features = ["time"] }
 tokio = { version = "1.38", default-features = false, features = ["time"] }
-tokio-tungstenite = { version = "0.21.0", features = [ "rustls-tls-webpki-roots" ] }
+tokio-tungstenite = { version = "0.23.0", features = [ "rustls-tls-webpki-roots" ] }
 # tungstenite = { version = "0.21.0", features = ["rustls-tls-webpki-roots"] }
 encoding_rs = { version = "0.8", default-features = false }
 mime = { version = "0.3", default-features = false }
