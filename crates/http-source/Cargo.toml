@@ -30,4 +30,4 @@ mime = { version = "0.3", default-features = false }
 
 fluvio = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.9" }
 fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.9", features = ["derive"] }
-fluvio-smartengine = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.9", features = ["engine"] }
+fluvio-smartengine = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.10", features = ["engine"] }
