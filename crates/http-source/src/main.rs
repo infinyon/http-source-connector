@@ -11,7 +11,7 @@ use anyhow::Result;
 use async_std::stream::StreamExt;
 use backoff::Backoff;
 use config::HttpConfig;
-use fluvio::{RecordKey, TopicProducer};
+use fluvio::{RecordKey, TopicProducerPool};
 use fluvio_connector_common::{
     connector,
     tracing::{debug, error, info, trace, warn},
@@ -29,7 +29,7 @@ const BACKOFF_LIMIT: Duration = Duration::from_secs(1000);
 
 #[allow(unreachable_code)]
 #[connector(source)]
-async fn start(config: HttpConfig, producer: TopicProducer) -> Result<()> {
+async fn start(config: HttpConfig, producer: TopicProducerPool) -> Result<()> {
     debug!(?config);
 
     let url = Url::parse(&config.endpoint.resolve()?)?;
