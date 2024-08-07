@@ -1,7 +1,7 @@
 [package]
 name = "http-source"
 group = "infinyon"
-version = "0.3.7"
+version = "0.3.8"
 apiVersion = "0.1.0"
 fluvio = "0.11.11"
 description = "HTTP source connector"
