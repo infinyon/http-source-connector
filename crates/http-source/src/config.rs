@@ -58,6 +58,7 @@ pub(crate) struct HttpConfig {
 #[derive(Debug)]
 pub(crate) struct WebSocketConfig {
     pub(crate) subscription_message: Option<String>,
+    pub(crate) subscription_messages: Option<Vec<String>>,
     // TODO: pub(crate) max_message_size: Option<usize>,
     pub(crate) ping_interval_ms: Option<u64>,
 }
