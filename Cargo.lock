@@ -2244,6 +2244,7 @@ dependencies = [
  "fluvio-connector-common",
  "fluvio-smartengine",
  "futures",
+ "http 1.1.0",
  "humantime",
  "humantime-serde",
  "mime",
@@ -2253,6 +2254,7 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "tokio-tungstenite",
+ "tungstenite 0.21.0",
  "url",
 ]
 
@@ -4440,6 +4442,7 @@ dependencies = [
  "thiserror",
  "url",
  "utf-8",
+ "webpki-roots",
 ]
 
 [[package]]

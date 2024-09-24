@@ -24,9 +24,10 @@ humantime-serde = { version = "1.1", default-features = false }
 tokio-stream = { version = "0.1", default-features = false, features = ["time"] }
 tokio = { version = "1.40", default-features = false, features = ["time"] }
 tokio-tungstenite = { version = "0.21.0", features = [ "rustls-tls-webpki-roots" ] }
-# tungstenite = { version = "0.21.0", features = ["rustls-tls-webpki-roots"] }
+tungstenite = { version = "0.21.0", features = ["rustls-tls-webpki-roots"] }
 encoding_rs = { version = "0.8", default-features = false }
 mime = { version = "0.3", default-features = false }
+http = "1.1"
 
 fluvio = { git = "https://github.com/infinyon/fluvio", branch = "wasmtime_21" }
 fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", branch = "wasmtime_21", features = ["derive"] }
