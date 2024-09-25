@@ -29,7 +29,7 @@ pub(crate) struct WebSocketSource {
 
 #[derive(Clone)]
 struct WSRequest {
-    request: tungstenite::handshake::client::Request,
+    request: tokio_tungstenite::tungstenite::handshake::client::Request,
     subscription_message: Option<String>,
 }
 
