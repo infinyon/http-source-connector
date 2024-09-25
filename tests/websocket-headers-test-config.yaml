@@ -1,0 +1,12 @@
+meta:
+  version: latest
+  name: websocket-headers-connector
+  type: websocket-source
+  topic: TOPIC
+  create_topic: false
+  producer:
+    linger: 0ms
+http:
+  endpoint: ws://127.0.0.1:8080/websocket-auth
+  headers:
+    - "x-secret-token: abc123"

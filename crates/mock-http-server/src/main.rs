@@ -38,6 +38,21 @@ async fn main() -> tide::Result<()> {
             }
             Ok(())
         }));
+    app.at("/websocket-auth")
+        .get(WebSocket::new(|request, stream| async move {
+            let header_values = request.header("x-secret-token");
+            if header_values.is_none() || header_values.unwrap().last() != "abc123" {
+                stream.send_string("Unauthorized".to_string()).await?;
+                return Ok(());
+            }
+
+            for i in 1..11 {
+                stream
+                    .send_string(format!("Hello, Fluvio! - {}", i))
+                    .await?;
+            }
+            Ok(())
+        }));
 
     app.listen("127.0.0.1:8080").await?;
     Ok(())

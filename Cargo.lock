@@ -2244,6 +2244,7 @@ dependencies = [
  "fluvio-connector-common",
  "fluvio-smartengine",
  "futures",
+ "http 1.1.0",
  "humantime",
  "humantime-serde",
  "mime",
