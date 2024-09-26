@@ -1,0 +1,22 @@
+meta:
+  version: latest
+  name: websocket-messages-connector
+  type: websocket-source
+  topic: TOPIC
+  create_topic: false
+  producer:
+    linger: 0ms
+http:
+  endpoint: ws://127.0.0.1:8080/websocket-echo
+  websocket_config:
+    subscription_messages:
+      - 'hello 1'
+      - 'hello 2'
+      - 'hello 3'
+      - 'hello 4'
+      - 'hello 5'
+      - 'hello 6'
+      - 'hello 7'
+      - 'hello 8'
+      - 'hello 9'
+      - 'hello 10'

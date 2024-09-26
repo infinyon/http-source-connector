@@ -1,3 +1,4 @@
+use async_std::stream::StreamExt;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Arc;
 use std::thread::sleep;
@@ -5,7 +6,7 @@ use tide::prelude::*;
 use tide::sse;
 use tide::sse::Sender;
 use tide::Request;
-use tide_websockets::WebSocket;
+use tide_websockets::{Message, WebSocket};
 
 #[derive(Clone)]
 struct State {
@@ -51,6 +52,14 @@ async fn main() -> tide::Result<()> {
                     .send_string(format!("Hello, Fluvio! - {}", i))
                     .await?;
             }
+            Ok(())
+        }));
+    app.at("/websocket-echo")
+        .get(WebSocket::new(|_request, mut stream| async move {
+            while let Some(Ok(Message::Text(input))) = stream.next().await {
+                stream.send_string(input.to_uppercase()).await?;
+            }
+
             Ok(())
         }));
 

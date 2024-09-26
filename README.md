@@ -15,18 +15,19 @@ See [docs](https://www.fluvio.io/connectors/inbound/http/) here.
 Tutorial for [HTTP to SQL Pipeline](https://www.fluvio.io/docs/tutorials/data-pipeline/).
 
 ### Configuration
-| Option       | default                    | type    | description                                                                                |
-| :------------| :--------------------------| :-----  | :----------------------------------------------------------------------------------------- |
-| interval     | 10s                        | String  | Interval between each HTTP Request. This is in the form of "1s", "10ms", "1m", "1ns", etc. |
-| method       | GET                        | String  | GET, POST, PUT, HEAD                                                                       |
-| endpoint     | -                          | String  | HTTP URL endpoint. Use `ws://` for websocket URLs.                                         |
-| headers      | -                          | Array\<String\> | Request header(s) "Key:Value" pairs                                                |
-| body         | -                          | String  | Request body e.g. in POST                                                                  |
-| user-agent   | "fluvio/http-source 0.1.0" | String  | Request user-agent                                                                         |
-| output_type  | text                       | String  | `text` = UTF-8 String Output, `json` = UTF-8 JSON Serialized String                        |
-| output_parts | body                       | String  | `body` = body only, `full` = all status, header and body parts                             |
-| stream       | false                      | bool    | Flag to indicate HTTP streaming mode                                                       |
-| delimiter    | '\n'                       | String  | Delimiter to separate records when producing from an HTTP streaming endpoint               |
+| Option           | default                    | type            | description                                                                                |
+|:-----------------|:---------------------------|:----------------|:-------------------------------------------------------------------------------------------|
+| interval         | 10s                        | String          | Interval between each HTTP Request. This is in the form of "1s", "10ms", "1m", "1ns", etc. |
+| method           | GET                        | String          | GET, POST, PUT, HEAD                                                                       |
+| endpoint         | -                          | String          | HTTP URL endpoint. Use `ws://` for websocket URLs.                                         |
+| headers          | -                          | Array\<String\> | Request header(s) "Key:Value" pairs                                                        |
+| body             | -                          | String          | Request body e.g. in POST                                                                  |
+| user-agent       | "fluvio/http-source 0.1.0" | String          | Request user-agent                                                                         |
+| output_type      | text                       | String          | `text` = UTF-8 String Output, `json` = UTF-8 JSON Serialized String                        |
+| output_parts     | body                       | String          | `body` = body only, `full` = all status, header and body parts                             |
+| stream           | false                      | bool            | Flag to indicate HTTP streaming mode                                                       |
+| delimiter        | '\n'                       | String          | Delimiter to separate records when producing from an HTTP streaming endpoint               |
+| websocket_config | {}                         | Object          | WebSocket configuration object. See below.                                                 |
 
 #### Record Type Output
 | Matrix                                                      | Output                                  |
@@ -36,6 +37,12 @@ Tutorial for [HTTP to SQL Pipeline](https://www.fluvio.io/docs/tutorials/data-pi
 | output_type = json, output_parts = body (default)           | Only the "body" in JSON struct          |
 | output_type = json, output_parts = full                     | HTTP "status", "body" and "header" JSON |
 
+#### WebSocket Configuration
+| Option                | default | type            | description                                                                                                                                                  |
+|:----------------------|:--------|:----------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| subscription_messages | []      | Array\<String\> | List of messages to send to the server after connection is established.                                                                                      |
+| ping_interval_ms      | 10000   | int             | Interval in milliseconds to send ping messages to the server.                                                                                                |
+| subscription_message  | -       | String          | (deprecated) Message to send to the server after connection is established. If provided with subscription_messages, subscription_message will be sent first. |
 
 ### Usage Example
 
@@ -45,7 +52,7 @@ This is an example of simple connector config file for polling an endpoint:
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.3.8
+  version: 0.4.0
   name: cat-facts
   type: http-source
   topic: cat-facts
@@ -75,7 +82,7 @@ Fluvio HTTP Source Connector supports Secrets in the `endpoint` and in the `head
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.3.8
+  version: 0.4.0
   name: cat-facts
   type: http-source
   topic: cat-facts
@@ -101,7 +108,7 @@ The previous example can be extended to add extra transformations to outgoing re
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.3.8
+  version: 0.4.0
   name: cat-facts
   type: http-source
   topic: cat-facts
@@ -141,7 +148,7 @@ Provide the `stream` configuration option to enable streaming mode with `delimit
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.3.8
+  version: 0.4.0
   name: wiki-updates
   type: http-source
   topic: wiki-updates
@@ -159,7 +166,7 @@ Connect to a websocket endpoint using a `ws://` URL. When reading text messages,
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.3.8
+  version: 0.4.0
   name: websocket-connector
   type: http-source
   topic: websocket-updates
