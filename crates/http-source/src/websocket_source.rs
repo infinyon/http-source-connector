@@ -14,7 +14,9 @@ use tokio::net::TcpStream;
 use tokio::time::Duration;
 use tokio_stream::{wrappers::IntervalStream, StreamExt};
 use tokio_tungstenite::{
-    connect_async, tungstenite::protocol::Message, MaybeTlsStream, WebSocketStream,
+    connect_async,
+    tungstenite::{client::IntoClientRequest, protocol::Message},
+    MaybeTlsStream, WebSocketStream,
 };
 use url::Url;
 
@@ -27,7 +29,7 @@ pub(crate) struct WebSocketSource {
 
 #[derive(Clone)]
 struct WSRequest {
-    url: Url,
+    request: tokio_tungstenite::tungstenite::handshake::client::Request,
     subscription_messages: Option<Vec<String>>,
 }
 
@@ -54,9 +56,9 @@ impl PingStream for WSPingOnlySink {
 }
 
 async fn establish_connection(request: WSRequest) -> Result<WebSocketStream<Transport>> {
-    match connect_async(&request.url).await {
+    match connect_async(request.request.clone()).await {
         Ok((mut ws_stream, _)) => {
-            info!("WebSocket connected to {}", &request.url);
+            info!("WebSocket connected to {}", &request.request.uri());
             if let Some(messages) = request.subscription_messages.as_ref() {
                 for message in messages {
                     ws_stream.send(Message::Text(message.to_owned())).await?;
@@ -130,6 +132,28 @@ async fn websocket_writer_and_stream<'a>(
 impl WebSocketSource {
     pub(crate) fn new(config: &HttpConfig) -> Result<Self> {
         let ws_config = config.websocket_config.as_ref();
+
+        let mut request = Url::parse(&config.endpoint.resolve()?)?.into_client_request()?;
+        let headers = request.headers_mut();
+
+        for h in config.headers.iter() {
+            match h.resolve() {
+                Ok(h) => {
+                    if let Some((key, value)) = h.split_once(':') {
+                        headers.insert(
+                            http::HeaderName::from_bytes(key.as_bytes())?,
+                            value.parse()?,
+                        );
+                    } else {
+                        error!("Failed to split header");
+                    }
+                }
+                Err(e) => {
+                    error!("Failed to resolve header: {}", e);
+                }
+            }
+        }
+
         let subscription_messages = if let Some(ws_config) = ws_config {
             if let Some(messages) = ws_config.subscription_messages.as_ref() {
                 Some(messages.clone())
@@ -142,10 +166,10 @@ impl WebSocketSource {
         } else {
             None
         };
+
         Ok(Self {
             request: WSRequest {
-                url: Url::parse(&config.endpoint.resolve()?)
-                    .context("unable to parse http endpoint")?,
+                request,
                 subscription_messages,
             },
             ping_interval_ms: ws_config.and_then(|c| c.ping_interval_ms).unwrap_or(10_000),
