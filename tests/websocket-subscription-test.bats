@@ -25,6 +25,7 @@ teardown() {
 }
 
 @test "websocket-connector-test" {
+    count=1
     echo "Starting consumer on topic $TOPIC"
     sleep 13
 
