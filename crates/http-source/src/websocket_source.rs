@@ -153,7 +153,10 @@ impl WebSocketSource {
         }
 
         let subscription_messages = if let Some(ws_config) = ws_config {
-            let mut messages = ws_config.subscription_messages.clone();
+            let mut messages = ws_config
+                .subscription_messages
+                .clone()
+                .unwrap_or_else(Vec::new);
             if let Some(message) = ws_config.subscription_message.as_ref() {
                 warn!("websocket_config.subscription_message is deprecated, please use subscription_messages instead. if both are provided, subscription_message will be sent first.");
                 messages.insert(0, message.to_owned());
