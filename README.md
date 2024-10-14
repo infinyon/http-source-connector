@@ -52,7 +52,7 @@ This is an example of simple connector config file for polling an endpoint:
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.4.1
+  version: 0.4.2
   name: cat-facts
   type: http-source
   topic: cat-facts
@@ -61,7 +61,7 @@ meta:
     - name: AUTHORIZATION_TOKEN
 http:
   endpoint: "https://catfact.ninja/fact"
-  interval: 10s  
+  interval: 10s
   headers:
     - "Authorization: token ${{ secrets.AUTHORIZATION_TOKEN }}"
     - "Cache-Control: no-cache"
@@ -82,7 +82,7 @@ Fluvio HTTP Source Connector supports Secrets in the `endpoint` and in the `head
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.4.1
+  version: 0.4.2
   name: cat-facts
   type: http-source
   topic: cat-facts
@@ -91,10 +91,10 @@ meta:
     - name: MY_SECRET_URL
     - name: MY_AUTHORIZATION_HEADER
 http:
- endpoint: 
+ endpoint:
    secret:
      name: MY_SECRET_URL
- headers: 
+ headers:
   - "Authorization: ${{ secrets.MY_AUTHORIZATION_HEADER }}
  interval: 10s
 ```
@@ -108,7 +108,7 @@ The previous example can be extended to add extra transformations to outgoing re
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.4.1
+  version: 0.4.2
   name: cat-facts
   type: http-source
   topic: cat-facts
@@ -148,7 +148,7 @@ Provide the `stream` configuration option to enable streaming mode with `delimit
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.4.1
+  version: 0.4.2
   name: wiki-updates
   type: http-source
   topic: wiki-updates
@@ -166,7 +166,7 @@ Connect to a websocket endpoint using a `ws://` URL. When reading text messages,
 # config-example.yaml
 apiVersion: 0.1.0
 meta:
-  version: 0.4.1
+  version: 0.4.2
   name: websocket-connector
   type: http-source
   topic: websocket-updates
