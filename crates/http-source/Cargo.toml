@@ -28,6 +28,6 @@ encoding_rs = { version = "0.8", default-features = false }
 mime = { version = "0.3", default-features = false }
 http = "1.1"
 
-fluvio = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.12" }
+fluvio = { git = "https://github.com/infinyon/fluvio", tag = "v0.12.0" }
 fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.11.12", features = ["derive"] }
 fluvio-smartengine = { git = "https://github.com/infinyon/fluvio", tag = "v0.12.0", features = ["engine"] }
