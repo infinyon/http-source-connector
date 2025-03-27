@@ -23,11 +23,11 @@ url = { version = "2.5", default-features = false, features = ["serde"] }
 humantime-serde = { version = "1.1", default-features = false }
 tokio-stream = { version = "0.1", default-features = false, features = ["time"] }
 tokio = { version = "1.40", default-features = false, features = ["time"] }
-tokio-tungstenite = { version = "0.21.0", features = [ "rustls-tls-webpki-roots" ] }
+tokio-tungstenite = { workspace = true, features = [ "rustls-tls-webpki-roots" ] }
 encoding_rs = { version = "0.8", default-features = false }
 mime = { version = "0.3", default-features = false }
 http = "1.1"
 
-fluvio = { git = "https://github.com/infinyon/fluvio", tag = "v0.12.1" }
-fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.12.1", features = ["derive"] }
-fluvio-smartengine = { git = "https://github.com/infinyon/fluvio", tag = "v0.12.1", features = ["engine"] }
+fluvio = { workspace = true  }
+fluvio-connector-common = { workspace = true , features = ["derive"] }
+fluvio-smartengine = { workspace = true, features = ["engine"] }

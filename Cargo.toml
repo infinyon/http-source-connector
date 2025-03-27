@@ -13,3 +13,8 @@ lto = true
 [workspace.dependencies]
 async-std = { version = "1.13",  default-features = false, features = ["attributes", "tokio1"] }
 serde = { version = "1.0", default-features = false, features = ["derive"] }
+tokio-tungstenite = { version = "0.21.0", features = [ "rustls-tls-webpki-roots" ] }
+
+fluvio = { git = "https://github.com/infinyon/fluvio", tag = "v0.16.1" }
+fluvio-connector-common = { git = "https://github.com/infinyon/fluvio", tag = "v0.16.1", features = ["derive"] }
+fluvio-smartengine = { git = "https://github.com/infinyon/fluvio", tag = "v0.16.1", features = ["engine"] }
