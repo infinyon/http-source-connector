@@ -9,5 +9,5 @@ publish = false
 crate-type = ['cdylib']
 
 [dependencies]
-fluvio-smartmodule = { version = "0.7" }
+fluvio-smartmodule = { version = "0.8" }
 

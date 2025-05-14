@@ -92,7 +92,7 @@ jobs:
       - name: Add wasm
         run: |
           rustup target add wasm32-unknown-unknown
-          rustup target add wasm32-wasi
+          rustup target add wasm32-wasip1
       - name: Setup BATS
         uses: mig4/setup-bats@v1
       - uses: Swatinem/rust-cache@v2
