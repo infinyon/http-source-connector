@@ -24,4 +24,4 @@ jobs:
       readme: ./README.md
     secrets:
       CLOUD_USER_EMAIL: ${{ secrets.ORG_CLOUD_SERVICE_EMAIL }}
-      CLOUD_USER_PASSWORD: ${{ secrets.ORG_HUB_SA_PASSWD_PROD }}
+      CLOUD_USER_PASSWORD: ${{ secrets.ORG_CLOUD_SERVICE_PASSWD_PROD }}

@@ -45,7 +45,7 @@ jobs:
         env:
           FLUVIO_CLOUD_REMOTE: 'https://infinyon.cloud'
           FLUVIO_CLOUD_TEST_USERNAME: ${{ secrets.ORG_CLOUD_SERVICE_EMAIL }}
-          FLUVIO_CLOUD_TEST_PASSWORD: ${{ secrets.ORG_HUB_SA_PASSWD_PROD }}
+          FLUVIO_CLOUD_TEST_PASSWORD: ${{ secrets.ORG_CLOUD_SERVICE_PASSWD_PROD }}
         run: make cloud_e2e_test
 
       - name: Test Cloud Development
@@ -54,7 +54,7 @@ jobs:
         env:
           FLUVIO_CLOUD_REMOTE: 'https://dev.infinyon.cloud'
           FLUVIO_CLOUD_TEST_USERNAME: ${{ secrets.ORG_CLOUD_SERVICE_EMAIL }}
-          FLUVIO_CLOUD_TEST_PASSWORD: ${{ secrets.ORG_HUB_SA_PASSWD_DEV }}
+          FLUVIO_CLOUD_TEST_PASSWORD: ${{ secrets.ORG_CLOUD_SERVICE_PASSWD_DEV }}
         run: make cloud_e2e_test
 
   done:
