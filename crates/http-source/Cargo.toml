@@ -18,7 +18,7 @@ futures = { version = "0.3", default-features = false }
 anyhow = { version = "1.0" }
 reqwest = { version = "0.12", features = ["stream"] }
 serde_json = { version = "1.0", default-features = false, features = ["preserve_order"] }
-humantime = { version = "2.1", default-features = false }
+humantime = { version = "2.2", default-features = false }
 url = { version = "2.5", default-features = false, features = ["serde"] }
 humantime-serde = { version = "1.1", default-features = false }
 tokio-stream = { version = "0.1", default-features = false, features = ["time"] }
